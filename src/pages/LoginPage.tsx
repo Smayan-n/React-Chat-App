@@ -1,5 +1,5 @@
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useEffect, useRef } from "react";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import googleIcon from "../assets/google.svg";
 import "../styles/login-create-page.css";
@@ -15,7 +15,7 @@ function LoginPage() {
 			.then((userCredential) => {
 				const user = userCredential.user;
 				console.log("user signed in: ", user);
-				navigate("/dashboard");
+				navigate("/React-Chat-App/dashboard");
 			})
 			.catch((error) => {
 				console.log("signin error", error);
@@ -38,7 +38,7 @@ function LoginPage() {
 				<input ref={passwordRef} type="password" placeholder="Password" id="password" />
 				<button onClick={signinUser}>Log In</button>
 				<div className="questions-section">
-					Don't have an account? <Link to="/signup">Register</Link> now.
+					Don't have an account? <Link to="/React-Chat-App/signup">Register</Link> now.
 				</div>
 			</section>
 		</>

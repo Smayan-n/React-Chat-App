@@ -25,7 +25,7 @@ function Dashboard() {
 		auth.signOut()
 			.then(() => {
 				console.log(user, "user signed out");
-				navigate("/login");
+				navigate("/React-Chat-App/login");
 			})
 			.catch((error) => {
 				console.log(error, "error signing out");
