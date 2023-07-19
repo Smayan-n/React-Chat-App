@@ -8,13 +8,12 @@ import { getDatabase } from "firebase/database";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-	apiKey: "AIzaSyA6lz-_sC3XZnUmTAuQdJGCMQVM90mKX1M",
-	authDomain: "test-cd4c7.firebaseapp.com",
-	projectId: "test-cd4c7",
-	storageBucket: "test-cd4c7.appspot.com",
-	messagingSenderId: "558980308364",
-	appId: "1:558980308364:web:8f3cfb260388203b704aa9",
-	measurementId: "G-29B1GCRWHY",
+	apiKey: "AIzaSyD0upLJKjt8_6X6D5xMNA6ufk9fIPOJnUU",
+	authDomain: "react-chat-app-00.firebaseapp.com",
+	projectId: "react-chat-app-00",
+	storageBucket: "react-chat-app-00.appspot.com",
+	messagingSenderId: "573722864435",
+	appId: "1:573722864435:web:4e25b9cdb0f4ddd56e2c46",
 };
 
 // Initialize Firebase
