@@ -1,30 +1,17 @@
-import { User, getAuth } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { getAuth } from "firebase/auth";
+
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 function Dashboard() {
-	const [user, setUser] = useState<User | null>(null);
-
-	useEffect(() => {
-		const auth = getAuth();
-
-		auth.onAuthStateChanged((user) => {
-			if (user) {
-				console.log("user is signed in");
-				setUser(user);
-			} else {
-				console.log("user is signed out");
-				setUser(null);
-			}
-		});
-	}, []);
+	const { currentUser } = useAuth()!;
 
 	const navigate = useNavigate();
 	const logOut = () => {
 		const auth = getAuth();
 		auth.signOut()
 			.then(() => {
-				console.log(user, "user signed out");
+				console.log(currentUser, "User signed out");
 				navigate("/login");
 			})
 			.catch((error) => {
@@ -35,13 +22,13 @@ function Dashboard() {
 	return (
 		<>
 			<div>Dashboard</div>
-			<div>{user ? "user is signed in" : "No user signed in"}</div>
-			{user ? (
+			<div>{currentUser ? "User is signed in" : "No User signed in"}</div>
+			{currentUser ? (
 				<>
 					<div>
-						user id: {user?.uid} user email: {user?.email}{" "}
+						User id: {currentUser?.uid} User email: {currentUser?.email}{" "}
 					</div>
-					<div>username: {user?.displayName}</div>
+					<div>username: {currentUser?.displayName}</div>
 					<button onClick={logOut}>Log Out</button>
 				</>
 			) : (

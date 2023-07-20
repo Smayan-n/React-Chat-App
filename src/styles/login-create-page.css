@@ -11,8 +11,10 @@
 
 
 .form{
-    height: 560px;
-    width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     background-color: rgba(255,255,255,0.13);
     position: absolute;
     transform: translate(-50%,-50%);
@@ -58,10 +60,13 @@ input{
 input:focus{
     background-color: rgba(255,255,255,0.17);
 }
-/* ::placeholder{
-    color: #e5e5e5;
-} */
-button{
+input:focus::placeholder{
+    color: rgb(190, 184, 184);
+}
+::placeholder{
+    color: #979696;
+}
+.submit-btn{
     margin-top: 50px;
     width: 100%;
     background-color: var(--color-primary);
@@ -72,6 +77,10 @@ button{
     border-radius: 5px;
     cursor: pointer;
 }
+.submit-btn:hover{
+    opacity: 0.8;
+}
+
 .social{
   margin-top: 30px;
   display: flex;
@@ -106,5 +115,4 @@ button{
 .questions-section{
     margin-top: 12px;
 }
-
 

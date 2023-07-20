@@ -23,26 +23,39 @@ function AuthProvider(props: AuthProviderProps) {
 
 	const navigate = useNavigate();
 	function signUp(name: string, email: string, password: string) {
-		createUserWithEmailAndPassword(getAuth(), email, password)
-			.then((userCredential) => {
-				const currentUser = userCredential.user;
+		return createUserWithEmailAndPassword(getAuth(), email, password);
+		// .then((userCredential) => {
+		// 	const currentUser = userCredential.user;
 
-				//set user name
-				void updateProfile(currentUser, {
-					displayName: name,
-				})
-					.then(() => {
-						console.log("user display name set");
-					})
-					.catch((error) => {
-						console.log("error in setting user display name", error);
-					});
+		// 	//set user name
+		// 	void updateProfile(currentUser, {
+		// 		displayName: name,
+		// 	})
+		// 		.then(() => {
+		// 			console.log("user display name set");
+		// 		})
+		// 		.catch((error) => {
+		// 			console.log("error in setting user display name", error);
+		// 		});
 
-				console.log("user signed in: ", currentUser);
-				navigate("/dashboard");
+		// 	console.log("user signed in: ", currentUser);
+		// 	navigate("/dashboard");
+		// })
+		// .catch((error) => {
+		// 	console.log("signUp error", error);
+		// });
+	}
+
+	function setUserName(name: string) {
+		//update username in firebase using auth's current user
+		updateProfile(getAuth().currentUser!, {
+			displayName: name,
+		})
+			.then(() => {
+				console.log("user display name set");
 			})
 			.catch((error) => {
-				console.log("signUp error", error);
+				console.log("error in setting user display name", error);
 			});
 	}
 
@@ -62,17 +75,25 @@ function AuthProvider(props: AuthProviderProps) {
 
 	//login functions
 	function login(email: string, password: string) {
-		signInWithEmailAndPassword(getAuth(), email, password)
-			.then((userCredential) => {
-				const user = userCredential.user;
-				console.log("user signed in: ", user);
-				navigate("/dashboard");
-			})
-			.catch((error) => {
-				console.log("signin error", error);
-			});
+		return signInWithEmailAndPassword(getAuth(), email, password);
+		// .then((userCredential) => {
+		// 	const user = userCredential.user;
+		// 	console.log("user signed in: ", user);
+		// 	navigate("/dashboard");
+		// })
+		// .catch((error) => {
+		// 	console.log("signin error", error);
+		// });
 	}
 
+	function navigateToDashboard() {
+		//navigate after delay for effect and also make sure user is set
+		setTimeout(() => {
+			navigate("/dashboard");
+		}, 500);
+	}
+
+	//effect to set user state when user logs in or logs out
 	useEffect(() => {
 		const unsubscribe = getAuth().onAuthStateChanged((user) => {
 			setCurrentUser(user);
@@ -88,6 +109,8 @@ function AuthProvider(props: AuthProviderProps) {
 		signUp,
 		signInWithGoogle,
 		login,
+		navigateToDashboard,
+		setUserName,
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
