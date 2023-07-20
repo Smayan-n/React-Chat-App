@@ -20,12 +20,12 @@ function Dashboard() {
 	}, []);
 
 	const navigate = useNavigate();
-	const signOut = () => {
+	const logOut = () => {
 		const auth = getAuth();
 		auth.signOut()
 			.then(() => {
 				console.log(user, "user signed out");
-				navigate("/React-Chat-App/login");
+				navigate("/login");
 			})
 			.catch((error) => {
 				console.log(error, "error signing out");
@@ -41,7 +41,7 @@ function Dashboard() {
 					<div>
 						user id: {user?.uid} user email: {user?.email}{" "}
 					</div>
-					<button onClick={signOut}>Sign Out</button>
+					<button onClick={logOut}>Log Out</button>
 				</>
 			) : (
 				""

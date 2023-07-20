@@ -1,7 +1,7 @@
 {
   "name": "chat-app",
-  "homepage": "https://smayan-n.github.io/React-Chat-App/#",
-  "private": true,
+  "homepage": "https://smayan-n.github.io/React-Chat-App",
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "scripts": {

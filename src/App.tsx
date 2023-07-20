@@ -16,12 +16,10 @@ function App() {
 	return (
 		<>
 			<Routes>
-				<Route path="/React-Chat-App/">
-					<Route path="home" element={<Home />}></Route>
-					<Route path="login" element={<LoginPage />}></Route>
-					<Route path="signup" element={<SignupPage />}></Route>
-					<Route path="dashboard" element={<Dashboard />}></Route>
-				</Route>
+				<Route exact path="/React-Chat-App" element={<Home />}></Route>
+				<Route path="/login" element={<LoginPage />}></Route>
+				<Route path="/signup" element={<SignupPage />}></Route>
+				<Route path="/dashboard" element={<Dashboard />}></Route>
 				<Route path="*" element={<Home />}></Route>
 			</Routes>
 			<div>App main page</div>

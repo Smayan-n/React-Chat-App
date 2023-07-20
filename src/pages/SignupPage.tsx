@@ -16,7 +16,7 @@ function SignupPage() {
 			.then((userCredential) => {
 				const user = userCredential.user;
 				console.log("user signed in: ", user);
-				navigate("/React-Chat-App/dashboard");
+				navigate("/dashboard");
 			})
 			.catch((error) => {
 				console.log("signup error", error);
@@ -30,7 +30,7 @@ function SignupPage() {
 			.then((userCredential) => {
 				const user = userCredential.user;
 				console.log("user signed in with google: ", user);
-				navigate("/React-Chat-App/dashboard");
+				navigate("/dashboard");
 			})
 			.catch((error) => {
 				console.log("google signup error", error);
@@ -57,7 +57,7 @@ function SignupPage() {
 				<button onClick={createUser}>Sign Up</button>
 
 				<div className="questions-section">
-					Already have an account? <Link to="/React-Chat-App/login">Sign In</Link> now.
+					Already have an account? <Link to="/login">Sign In</Link> now.
 				</div>
 			</section>
 		</>
