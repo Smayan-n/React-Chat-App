@@ -41,6 +41,7 @@ function Dashboard() {
 					<div>
 						user id: {user?.uid} user email: {user?.email}{" "}
 					</div>
+					<div>username: {user?.displayName}</div>
 					<button onClick={logOut}>Log Out</button>
 				</>
 			) : (

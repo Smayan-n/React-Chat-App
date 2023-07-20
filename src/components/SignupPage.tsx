@@ -1,7 +1,7 @@
-import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithPopup } from "firebase/auth";
 import { useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import googleIcon from "../assets/google.svg";
+import { useAuth } from "../contexts/AuthContext";
 import "../styles/login-create-page.css";
 
 function SignupPage() {
@@ -9,32 +9,10 @@ function SignupPage() {
 	const emailRef = useRef<HTMLInputElement>(null);
 	const passwordRef = useRef<HTMLInputElement>(null);
 
-	const navigate = useNavigate();
-	const createUser = () => {
-		const auth = getAuth();
-		createUserWithEmailAndPassword(auth, emailRef.current!.value, passwordRef.current!.value)
-			.then((userCredential) => {
-				const user = userCredential.user;
-				console.log("user signed in: ", user);
-				navigate("/dashboard");
-			})
-			.catch((error) => {
-				console.log("signup error", error);
-			});
-	};
+	const { signUp, signInWithGoogle } = useAuth()!;
 
-	const googleSignup = () => {
-		const provider = new GoogleAuthProvider();
-		const auth = getAuth();
-		signInWithPopup(auth, provider)
-			.then((userCredential) => {
-				const user = userCredential.user;
-				console.log("user signed in with google: ", user);
-				navigate("/dashboard");
-			})
-			.catch((error) => {
-				console.log("google signup error", error);
-			});
+	const createUser = () => {
+		signUp(nameRef.current!.value, emailRef.current!.value, passwordRef.current!.value);
 	};
 
 	return (
@@ -43,7 +21,7 @@ function SignupPage() {
 				<h3>Create Account</h3>
 
 				<div className="social">
-					<div onClick={googleSignup}>
+					<div onClick={signInWithGoogle}>
 						<img width="30px" height="30px" src={googleIcon} alt="icon" />
 					</div>
 				</div>
