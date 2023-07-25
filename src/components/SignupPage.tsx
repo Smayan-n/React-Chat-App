@@ -1,10 +1,10 @@
 import { FirebaseError } from "firebase/app";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { addUserToDatabase } from "../Utility/databaseUtility";
 import { replaceAll } from "../Utility/utilityFunctions";
 import googleIcon from "../assets/google.svg";
 import { useAuth } from "../contexts/AuthContext";
-import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/login-create-page.css";
 import Alert from "./Alert";
 import Loader from "./Loader";
@@ -18,7 +18,6 @@ function SignupPage() {
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const { signUp, signInWithGoogle, navigateToDashboard, setUsername } = useAuth()!;
-	const { addUserToDatabase } = useFirestore()!;
 
 	const createUser = async () => {
 		const [name, email, password, confirmPassword] = [

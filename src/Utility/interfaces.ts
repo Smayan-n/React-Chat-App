@@ -10,8 +10,10 @@ interface AuthObject {
 }
 
 interface FirestoreObject {
-	addUserToDatabase: (user: User) => void;
-	findUsersWithName: (name: string) => Promise<AppUser[]>;
+	chatGroups: AppGroup[];
+	messages: AppMessage[];
+	addMessageToDatabase: (groupId: string, message: string, sender: AppUser) => Promise<void>;
+	addGroupToDatabase: (user1: AppUser, user2: AppUser) => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -30,6 +32,11 @@ interface LoaderProps {
 	message: string;
 }
 
+interface ChatGroupProps {
+	group: AppGroup;
+	onGroupSet: (group: AppGroup) => void;
+}
+
 //types for documents retrieved from the database
 interface AppUser {
 	username: string;
@@ -40,16 +47,26 @@ interface AppUser {
 
 interface AppMessage {
 	messageContent: string;
-	sender: string;
-	timestamp: Date;
+	sender: string; //user id
+	timeSent: Date;
+}
+
+interface AppGroup {
+	groupName: string;
+	members: string[]; //user ids
+	groupId: string;
+	createdBy: string; //user id
+	createdAt: Date;
 }
 
 export type {
 	AlertProps,
+	AppGroup,
 	AppMessage,
 	AppUser,
 	AuthObject,
 	AuthProviderProps,
+	ChatGroupProps,
 	FirestoreObject,
 	FirestoreProviderProps,
 	LoaderProps,

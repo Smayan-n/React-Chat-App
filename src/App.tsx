@@ -14,8 +14,8 @@ init();
 function App() {
 	return (
 		<>
-			<FirestoreProvider>
-				<AuthProvider>
+			<AuthProvider>
+				<FirestoreProvider>
 					<Routes>
 						<Route path="/React-Chat-App" element={<Home />}></Route>
 						<Route path="/login" element={<LoginPage />}></Route>
@@ -23,8 +23,8 @@ function App() {
 						<Route path="/dashboard" element={<Dashboard />}></Route>
 						<Route path="*" element={<Home />}></Route>
 					</Routes>
-				</AuthProvider>
-			</FirestoreProvider>
+				</FirestoreProvider>
+			</AuthProvider>
 		</>
 	);
 }

@@ -1,4 +1,4 @@
-import { User } from "firebase/auth";
+import { Unsubscribe, User } from "firebase/auth";
 import {
 	addDoc,
 	collection,
@@ -11,9 +11,10 @@ import {
 	updateDoc,
 	where,
 } from "firebase/firestore";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { firestoreDB } from "../Utility/firebase";
-import { AppMessage, AppUser, FirestoreObject, FirestoreProviderProps } from "../Utility/interfaces";
+import { AppGroup, AppMessage, AppUser, FirestoreObject, FirestoreProviderProps } from "../Utility/interfaces";
+import { useAuth } from "./AuthContext";
 
 const FirestoreContext = React.createContext<FirestoreObject | null>(null);
 
@@ -23,26 +24,13 @@ function useFirestore() {
 
 function FirestoreProvider(props: FirestoreProviderProps) {
 	const { children } = props;
+	const { currentUser } = useAuth()!;
 
-	async function getAppUser(user: User): Promise<AppUser | null> {
-		//return an AppUser object from a User object
-		const ref = doc(firestoreDB, `users/${user.uid}`);
-		const docSnap = await getDoc(ref);
-
-		return new Promise<AppUser>((resolve, reject) => {
-			docSnap.exists() ? resolve(docSnap.data() as AppUser) : reject(null);
-		});
-	}
+	const [chatGroups, setChatGroups] = useState<AppGroup[]>([]);
+	const [messages, setMessages] = useState<AppMessage[]>([]);
+	const unsubRef = useRef<Unsubscribe>();
 
 	//NOTE:: handle and fix function without proper promise handling
-	function addUserToDatabase(user: User) {
-		const ref = doc(firestoreDB, "users", user.uid);
-		void setDoc(ref, {
-			username: user.displayName?.toLowerCase(),
-			email: user.email,
-			uid: user.uid,
-		});
-	}
 
 	async function addGroupToDatabase(user1: AppUser, user2: AppUser) {
 		//make a new chat group with user1 and user2 as members
@@ -62,10 +50,10 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 		const user1Ref = doc(firestoreDB, "users", user1.uid);
 		const user2Ref = doc(firestoreDB, "users", user2.uid);
 		await updateDoc(user1Ref, {
-			groups: [...user1.groups, groupRef.id],
+			groups: [groupRef.id],
 		});
 		await updateDoc(user2Ref, {
-			groups: [...user2.groups, groupRef.id],
+			groups: [groupRef.id],
 		});
 	}
 
@@ -78,48 +66,75 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 		});
 	}
 
-	async function findUsersWithName(searchTerm: string) {
-		const ref = collection(firestoreDB, "users");
+	//NOTE: use caching - look at firebase docs
+	function getMessagesFromGroup(groupId: string) {
+		unsubRef.current && unsubRef.current();
 
-		//queries all names starting with searchTerm
-		const usersQuery = query(
-			ref,
-			where("username", ">=", searchTerm),
-			where("username", "<=", searchTerm.toLowerCase() + "\uf8ff") //any string of chars after searchTerm
+		const ref = collection(firestoreDB, `chatGroups/${groupId}/messages`);
+		const q = query(ref);
+		const unsubscribe = onSnapshot(
+			q,
+			(querySnapshot) => {
+				const msgs: AppMessage[] = [];
+				querySnapshot.forEach((doc) => {
+					msgs.push(doc.data() as AppMessage);
+				});
+				setMessages(msgs);
+			},
+			(error) => {
+				console.log(error);
+			}
 		);
-		const querySnapshot = await getDocs(usersQuery);
-		const users: AppUser[] = [];
-		querySnapshot.forEach((doc) => {
-			users.push(doc.data() as AppUser);
-		});
 
-		return new Promise<AppUser[]>((resolve) => {
-			resolve(users);
-		});
+		unsubRef.current = unsubscribe;
 	}
 
 	useEffect(() => {
-		const ref = collection(firestoreDB, "chatGroups/zCkqr48ja7YuQqcgNT0L/messages");
-		const q = query(ref);
-		const unsubscribe = onSnapshot(q, (querySnapshot) => {
-			const messages: AppMessage[] = [];
-			querySnapshot.forEach((doc) => {
-				messages.push(doc.data() as AppMessage);
-			});
-			console.log(messages);
-		});
+		setMessages([]);
+		// const ref = collection(firestoreDB, `chatGroups/zCkqr48ja7YuQqcgNT0L/messages`);
+		// const q = query(ref);
+		// console.log("unsubscribed from previous group's messages");
+		// const unsubscribe = onSnapshot(q, (querySnapshot) => {
+		// 	const msgs: AppMessage[] = [];
+		// 	querySnapshot.forEach((doc) => {
+		// 		msgs.push(doc.data() as AppMessage);
+		// 	});
+		// 	console.log(msgs);
+		// 	setMessages(msgs);
+		// });
+
+		//add onSnapshot to update chatGroups automatically
+		if (currentUser) {
+			const ref = collection(firestoreDB, "chatGroups");
+			const groupsQuery = query(ref, where("members", "array-contains", currentUser.uid));
+			getDocs(groupsQuery)
+				.then((querySnapshot) => {
+					const groups: AppGroup[] = [];
+					querySnapshot.forEach((doc) => {
+						groups.push(doc.data() as AppGroup);
+					});
+					// console.log(groups);
+					console.log(groups);
+					setChatGroups(groups);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		} else {
+			//
+		}
 
 		return () => {
-			unsubscribe();
+			unsubRef.current && unsubRef.current();
 		};
-	});
+	}, [currentUser]);
 
 	const value: FirestoreObject = {
-		addUserToDatabase,
-		findUsersWithName,
 		addGroupToDatabase,
 		addMessageToDatabase,
-		getAppUser,
+		getMessagesFromGroup,
+		chatGroups,
+		messages,
 	};
 
 	return <FirestoreContext.Provider value={value}>{children}</FirestoreContext.Provider>;

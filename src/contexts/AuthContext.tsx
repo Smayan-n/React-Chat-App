@@ -9,8 +9,8 @@ import {
 } from "firebase/auth";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { addUserToDatabase } from "../Utility/databaseUtility";
 import { AuthObject, AuthProviderProps } from "../Utility/interfaces";
-import { useFirestore } from "../contexts/FirestoreContext";
 
 const AuthContext = React.createContext<AuthObject | null>(null);
 
@@ -21,7 +21,6 @@ function useAuth() {
 function AuthProvider(props: AuthProviderProps) {
 	const { children } = props;
 	const [currentUser, setCurrentUser] = useState<User | null>(null);
-	const { addUserToDatabase } = useFirestore()!;
 
 	const navigate = useNavigate();
 	function signUp(email: string, password: string) {
