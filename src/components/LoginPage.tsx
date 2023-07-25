@@ -26,7 +26,7 @@ function LoginPage() {
 				setLoading(true);
 
 				await login(email, password);
-				navigateToDashboard();
+				await navigateToDashboard();
 
 				setLoading(false);
 			} catch (error) {
@@ -41,6 +41,11 @@ function LoginPage() {
 	return (
 		<>
 			{error && <Alert setError={setError} message={error}></Alert>}
+			<div className="background">
+				<div className="shape"></div>
+				<div className="shape"></div>
+			</div>
+
 			<section className="form">
 				<h3>Sign In</h3>
 

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { replaceAll } from "../Utility/utilityFunctions";
 import googleIcon from "../assets/google.svg";
 import { useAuth } from "../contexts/AuthContext";
+import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/login-create-page.css";
 import Alert from "./Alert";
 import Loader from "./Loader";
@@ -16,7 +17,8 @@ function SignupPage() {
 	const [error, setError] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const { signUp, signInWithGoogle, navigateToDashboard, setUserName } = useAuth()!;
+	const { signUp, signInWithGoogle, navigateToDashboard, setUsername } = useAuth()!;
+	const { addUserToDatabase } = useFirestore()!;
 
 	const createUser = async () => {
 		const [name, email, password, confirmPassword] = [
@@ -32,12 +34,18 @@ function SignupPage() {
 			setError("passwords do not match");
 		} else {
 			try {
+				//reset error
 				setError("");
-
 				setLoading(true);
-				await signUp(name, email, password);
-				setUserName(name);
-				navigateToDashboard();
+
+				const userCredential = await signUp(email, password);
+				//set username
+				await setUsername(name);
+				//after navigating to dash, all user fields should be set
+				await navigateToDashboard();
+
+				//add user to firestore
+				addUserToDatabase(userCredential.user);
 
 				setLoading(false);
 			} catch (error) {
@@ -57,6 +65,10 @@ function SignupPage() {
 	return (
 		<>
 			{error && <Alert setError={setError} message={error} />}
+			<div className="background">
+				<div className="shape"></div>
+				<div className="shape"></div>
+			</div>
 			<section className="form">
 				<h3>Create Account</h3>
 
@@ -68,7 +80,7 @@ function SignupPage() {
 
 				<div className="or-use-section">or register with email</div>
 
-				<input ref={nameRef} type="text" placeholder="Name" id="name" />
+				<input ref={nameRef} type="text" placeholder="Username" id="name" />
 				<input ref={emailRef} type="email" placeholder="Email" id="email" />
 				<input ref={passwordRef} type="password" placeholder="Password" />
 				<input ref={confirmPasswordRef} type="password" placeholder="Confirm Password" />
