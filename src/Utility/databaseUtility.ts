@@ -12,9 +12,9 @@ function addUserToDatabase(user: User) {
 	});
 }
 
-async function getAppUser(user: User): Promise<AppUser | null> {
-	//return an AppUser object from a User object
-	const ref = doc(firestoreDB, `users/${user.uid}`);
+async function getAppUser(uid: string): Promise<AppUser | null> {
+	//return an AppUser object from a user uid
+	const ref = doc(firestoreDB, `users/${uid}`);
 	const docSnap = await getDoc(ref);
 
 	return new Promise<AppUser>((resolve, reject) => {

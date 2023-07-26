@@ -1,4 +1,21 @@
 .chat-group-section{
     background-color: grey;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    border: 1px solid black;
+    width: 100%;
+    padding: 10px;
+}
+
+.chat-group-section:hover{
+    background-color: #bdbdbd;
+}
+
+.group-info-section{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
 }

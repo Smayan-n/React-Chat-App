@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { init } from "./Utility/firebase";
+import ChatInterface from "./components/ChatInterface";
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
 import LoginPage from "./components/LoginPage";
@@ -14,17 +15,19 @@ init();
 function App() {
 	return (
 		<>
-			<AuthProvider>
-				<FirestoreProvider>
-					<Routes>
-						<Route path="/React-Chat-App" element={<Home />}></Route>
-						<Route path="/login" element={<LoginPage />}></Route>
-						<Route path="/signup" element={<SignupPage />}></Route>
-						<Route path="/dashboard" element={<Dashboard />}></Route>
-						<Route path="*" element={<Home />}></Route>
-					</Routes>
-				</FirestoreProvider>
-			</AuthProvider>
+			<section className="main-app-section">
+				<AuthProvider>
+					<FirestoreProvider>
+						<Routes>
+							<Route path="/React-Chat-App" element={<Home />}></Route>
+							<Route path="/login" element={<LoginPage />}></Route>
+							<Route path="/signup" element={<SignupPage />}></Route>
+							<Route path="/dashboard" element={<Dashboard />}></Route>
+							<Route path="*" element={<Home />}></Route>
+						</Routes>
+					</FirestoreProvider>
+				</AuthProvider>
+			</section>
 		</>
 	);
 }

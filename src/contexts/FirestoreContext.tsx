@@ -7,6 +7,7 @@ import {
 	getDocs,
 	onSnapshot,
 	query,
+	serverTimestamp,
 	setDoc,
 	updateDoc,
 	where,
@@ -37,7 +38,7 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 		const ref = collection(firestoreDB, "chatGroups");
 		//create a new group document with auto generated id
 		const groupRef = await addDoc(ref, {
-			createdAt: new Date(),
+			createdAt: serverTimestamp(),
 			createdBy: user1.uid,
 			members: [user1.uid, user2.uid],
 		});
@@ -57,19 +58,21 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 		});
 	}
 
-	async function addMessageToDatabase(groupId: string, message: string, sender: User) {
+	async function addMessageToDatabase(groupId: string, message: string, uid: string) {
 		const ref = collection(firestoreDB, `chatGroups/${groupId}/messages`);
 		await addDoc(ref, {
 			messageContent: message,
-			sender: sender.uid,
-			timeSent: new Date(),
+			sender: uid,
+			timeSent: serverTimestamp(),
 		});
 	}
 
 	//NOTE: use caching - look at firebase docs
-	function getMessagesFromGroup(groupId: string) {
+	function listenToMsgsFrom(groupId: string) {
+		//unsubscribe from last snapshot listener
 		unsubRef.current && unsubRef.current();
 
+		//attach new listener to given group
 		const ref = collection(firestoreDB, `chatGroups/${groupId}/messages`);
 		const q = query(ref);
 		const unsubscribe = onSnapshot(
@@ -77,7 +80,9 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 			(querySnapshot) => {
 				const msgs: AppMessage[] = [];
 				querySnapshot.forEach((doc) => {
-					msgs.push(doc.data() as AppMessage);
+					//ServerTimestamp() updates doc value on server so first snapshot call causes time to be null
+					//if timesent is null, errors are caused...
+					doc.data().timeSent && msgs.push(doc.data() as AppMessage);
 				});
 				setMessages(msgs);
 			},
@@ -90,18 +95,8 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 	}
 
 	useEffect(() => {
+		//reset messages array on each re-render to prevent other users viewing wrong messages
 		setMessages([]);
-		// const ref = collection(firestoreDB, `chatGroups/zCkqr48ja7YuQqcgNT0L/messages`);
-		// const q = query(ref);
-		// console.log("unsubscribed from previous group's messages");
-		// const unsubscribe = onSnapshot(q, (querySnapshot) => {
-		// 	const msgs: AppMessage[] = [];
-		// 	querySnapshot.forEach((doc) => {
-		// 		msgs.push(doc.data() as AppMessage);
-		// 	});
-		// 	console.log(msgs);
-		// 	setMessages(msgs);
-		// });
 
 		//add onSnapshot to update chatGroups automatically
 		if (currentUser) {
@@ -113,8 +108,6 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 					querySnapshot.forEach((doc) => {
 						groups.push(doc.data() as AppGroup);
 					});
-					// console.log(groups);
-					console.log(groups);
 					setChatGroups(groups);
 				})
 				.catch((error) => {
@@ -132,7 +125,7 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 	const value: FirestoreObject = {
 		addGroupToDatabase,
 		addMessageToDatabase,
-		getMessagesFromGroup,
+		listenToMsgsFrom,
 		chatGroups,
 		messages,
 	};

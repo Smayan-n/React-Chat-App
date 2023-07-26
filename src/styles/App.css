@@ -1,7 +1,10 @@
 
 .body{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 320px;
+  
+}
+
+.main-app-section{
+  border: 2px solid red;
+  height: 100vh;
+  padding: 20px;
 }

@@ -38,6 +38,11 @@ function LoginPage() {
 		}
 	};
 
+	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+		void loginUser();
+	}
+
 	return (
 		<>
 			{error && <Alert setError={setError} message={error}></Alert>}
@@ -46,7 +51,7 @@ function LoginPage() {
 				<div className="shape"></div>
 			</div>
 
-			<section className="form">
+			<form onSubmit={handleSubmit} className="form">
 				<h3>Sign In</h3>
 
 				<div className="social">
@@ -55,16 +60,17 @@ function LoginPage() {
 					</div>
 				</div>
 
-				<div className="or-use-section">or use your email</div>
+				<div className="or-use-section">or login with your email</div>
 
-				<input ref={emailRef} type="email" placeholder="Email" id="email" />
-				<input ref={passwordRef} type="password" placeholder="Password" id="password" />
-				<button
-					className="submit-btn"
-					onClick={() => {
-						void loginUser();
-					}}
-				>
+				<input className="signup-input" ref={emailRef} type="email" placeholder="Email" id="email" />
+				<input
+					className="signup-input"
+					ref={passwordRef}
+					type="password"
+					placeholder="Password"
+					id="password"
+				/>
+				<button type="submit" className="submit-btn">
 					Log In
 				</button>
 				{loading && <Loader message="Signing In..." />}
@@ -72,7 +78,7 @@ function LoginPage() {
 				<div className="questions-section">
 					Don't have an account? <Link to="/signup">Register</Link> now.
 				</div>
-			</section>
+			</form>
 		</>
 	);
 }

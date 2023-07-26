@@ -1,0 +1,41 @@
+
+.msg{
+    display: flex;
+    color: black;
+    margin-bottom: 15px;
+    align-items: center;
+}
+.left-msg{
+    justify-content: flex-start;
+}
+
+.right-msg{
+    justify-content: flex-end;
+}
+
+.msg-bubble{
+    background-color: var(--color-primary);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+}
+
+.left-msg .msg-bubble{
+    border-radius: 10px 10px 10px 0px;
+}
+
+.right-msg .msg-bubble{
+    border-radius: 10px 10px 0px 10px;
+
+}
+
+.msg-info{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: grey;
+    gap: 18px;
+}
+

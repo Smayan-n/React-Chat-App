@@ -32,6 +32,7 @@ function SignupPage() {
 		} else if (password !== confirmPassword) {
 			setError("passwords do not match");
 		} else {
+			//try catch is same as doing .then().error()
 			try {
 				//reset error
 				setError("");
@@ -57,6 +58,11 @@ function SignupPage() {
 		}
 	};
 
+	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+		void createUser();
+	}
+
 	useEffect(() => {
 		console.log("useEffect");
 	}, []);
@@ -68,7 +74,7 @@ function SignupPage() {
 				<div className="shape"></div>
 				<div className="shape"></div>
 			</div>
-			<section className="form">
+			<form onSubmit={handleSubmit} className="form">
 				<h3>Create Account</h3>
 
 				<div className="social">
@@ -79,17 +85,17 @@ function SignupPage() {
 
 				<div className="or-use-section">or register with email</div>
 
-				<input ref={nameRef} type="text" placeholder="Username" id="name" />
-				<input ref={emailRef} type="email" placeholder="Email" id="email" />
-				<input ref={passwordRef} type="password" placeholder="Password" />
-				<input ref={confirmPasswordRef} type="password" placeholder="Confirm Password" />
+				<input className="signup-input" ref={nameRef} type="text" placeholder="Username" id="name" />
+				<input className="signup-input" ref={emailRef} type="email" placeholder="Email" id="email" />
+				<input className="signup-input" ref={passwordRef} type="password" placeholder="Password" />
+				<input
+					className="signup-input"
+					ref={confirmPasswordRef}
+					type="password"
+					placeholder="Confirm Password"
+				/>
 
-				<button
-					className="submit-btn"
-					onClick={() => {
-						void createUser();
-					}}
-				>
+				<button className="submit-btn" type="submit">
 					Sign Up
 				</button>
 				{loading && <Loader message="Creating Account..." />}
@@ -97,7 +103,7 @@ function SignupPage() {
 				<div className="questions-section">
 					Already have an account? <Link to="/login">Sign In</Link> now.
 				</div>
-			</section>
+			</form>
 		</>
 	);
 }

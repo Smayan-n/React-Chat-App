@@ -1,0 +1,27 @@
+.main-chats-section{
+    display: flex;
+    flex-direction: row;
+    border: 2px solid blue;
+    height: 100%;
+    justify-content: space-between;
+
+}
+
+.chat-groups{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    overflow-y: scroll;
+    flex: 1;
+}
+
+.chat-groups::-webkit-scrollbar{
+    width: 7px;
+}
+.chat-groups::-webkit-scrollbar-track {
+    background: #ddd;
+  }
+  .chat-groups::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+  }

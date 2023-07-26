@@ -1,4 +1,5 @@
 import { User, UserCredential } from "firebase/auth";
+import { Timestamp } from "firebase/firestore";
 
 interface AuthObject {
 	currentUser: User | null;
@@ -12,10 +13,11 @@ interface AuthObject {
 interface FirestoreObject {
 	chatGroups: AppGroup[];
 	messages: AppMessage[];
-	addMessageToDatabase: (groupId: string, message: string, sender: AppUser) => Promise<void>;
+	addMessageToDatabase: (groupId: string, message: string, uid: string) => Promise<void>;
 	addGroupToDatabase: (user1: AppUser, user2: AppUser) => Promise<void>;
+	listenToMsgsFrom: (groupId: string) => void;
 }
-
+//Props
 interface AuthProviderProps {
 	children: React.ReactNode;
 }
@@ -37,6 +39,17 @@ interface ChatGroupProps {
 	onGroupSet: (group: AppGroup) => void;
 }
 
+interface ChatInterfaceProps {
+	group: AppGroup | null;
+	messages: AppMessage[];
+	onSendMessage: (message: string) => Promise<void>;
+}
+
+interface MessageProps {
+	message: AppMessage;
+	leftorright: string;
+}
+
 //types for documents retrieved from the database
 interface AppUser {
 	username: string;
@@ -48,7 +61,7 @@ interface AppUser {
 interface AppMessage {
 	messageContent: string;
 	sender: string; //user id
-	timeSent: Date;
+	timeSent: Timestamp;
 }
 
 interface AppGroup {
@@ -56,7 +69,7 @@ interface AppGroup {
 	members: string[]; //user ids
 	groupId: string;
 	createdBy: string; //user id
-	createdAt: Date;
+	createdAt: Timestamp;
 }
 
 export type {
@@ -67,7 +80,9 @@ export type {
 	AuthObject,
 	AuthProviderProps,
 	ChatGroupProps,
+	ChatInterfaceProps,
 	FirestoreObject,
 	FirestoreProviderProps,
 	LoaderProps,
+	MessageProps,
 };
