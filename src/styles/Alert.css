@@ -1,7 +1,7 @@
 /* The alert message box */
 @keyframes slide {
     0% {
-      transform: translate(-100%)
+      transform: translate(-200%)
     }
     100%{
       transform: translate(0%);
@@ -13,12 +13,12 @@
   }
 
 .alert {
-    position: relative;
+    position: fixed;
     padding: 1rem 1rem;
     margin: 2rem;
     border: 1px solid transparent;
     border-radius: 0.25rem;
-    z-index: 100;
+    z-index: 2000;
   }
   .error {
     color: #842029;

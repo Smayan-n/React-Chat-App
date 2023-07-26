@@ -1,12 +1,14 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { FiSettings } from "react-icons/fi";
 import { AppMessage, ChatInterfaceProps } from "../Utility/interfaces";
-import { getTimeFromTimestamp, sortMessagesByTime } from "../Utility/utilityFunctions";
+import { getTimeFromTimestamp } from "../Utility/utilityFunctions";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/ChatInterface.css";
+import Loader from "./Loader";
 import Message from "./Message";
 
 function ChatInterface(props: ChatInterfaceProps) {
-	const { group, messages, onSendMessage } = props;
+	const { group, messages, onSendMessage, loading } = props;
 	const { currentUser } = useAuth()!;
 	const msgInputRef = useRef<HTMLInputElement>(null);
 
@@ -32,19 +34,18 @@ function ChatInterface(props: ChatInterfaceProps) {
 			<header className="chat-header">
 				<div className="chat-header-title">
 					<i className="fas fa-comment-alt"></i>
-					{group && group.groupId}
+					{group && group.groupName}
 				</div>
 
 				<div className="chat-header-options">
-					<span>
-						<i className="fas fa-cog"></i>
-					</span>
+					<FiSettings size="18px" />
 				</div>
 			</header>
 
 			<div className="main-chat-area">
+				{loading && <Loader message="Loading chats" />}
 				{messages.length > 0 &&
-					sortMessagesByTime(messages).map((msg: AppMessage) => {
+					messages.map((msg: AppMessage) => {
 						return (
 							<Message
 								key={getTimeFromTimestamp(msg.timeSent, true)}

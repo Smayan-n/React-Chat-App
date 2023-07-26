@@ -6,9 +6,12 @@ function Loader(props: LoaderProps) {
 
 	return (
 		<>
-			<section className="blurred-bg"></section>
-			<div className="loader"></div>
-			<div className="loader-text">{message}</div>
+			{/* <section className="blurred-bg"></section> */}
+			<section className="loader-section">
+				<div className="blurred-loader-bg"></div>
+				<div className="loader"></div>
+				<div className="loader-text">{message}</div>
+			</section>
 		</>
 	);
 }

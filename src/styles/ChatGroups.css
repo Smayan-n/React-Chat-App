@@ -1,0 +1,63 @@
+
+.chat-groups-section{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.groups-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: space-between;
+    padding: 10px;
+}
+
+
+.groups{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.groups::-webkit-scrollbar{
+    width: 7px;
+}
+.groups::-webkit-scrollbar-track {
+    background: #ddd;
+  }
+  .groups::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+  }
+
+.create-chat-btn{
+    cursor: pointer
+}
+
+
+.chat-group{
+    background-color: grey;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    border: 1px solid black;
+    width: 100%;
+    padding: 10px;
+}
+
+.chat-group:hover{
+    background-color: #bdbdbd;
+}
+
+.group-info-section{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+

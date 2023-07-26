@@ -27,6 +27,8 @@
         #1845ad,
         #23a2f6
     );
+    /* opacity: 0.8; */
+
     left: -80px;
     top: -80px;
 }
@@ -36,6 +38,7 @@
         #ff512f,
         #f09819
     );
+    /* opacity: 0.8; */
     right: -30px;
     bottom: -80px;
 }
@@ -45,7 +48,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: rgba(133, 130, 130, 0.2);
+    background-color: rgba(133, 130, 130, 0.3);
     position: absolute;
     /*To center */
     transform: translate(-50%,-50%);
@@ -58,14 +61,7 @@
     padding: 50px 35px;
     min-width: 300px;
 }
-/*all elements in form*/
-.form *{
-    font-family: 'Poppins',sans-serif;
-    color: #ffffff;
-    letter-spacing: 0.5px;
-    outline: none;
-    border: none;
-}
+
 .form h3{
     font-size: 45px;
     font-weight: 700;
@@ -88,6 +84,8 @@
     margin-top: 8px;
     font-size: 15px;
     font-weight: 300;
+    outline: none;
+    border: none;
 }
 .signup-input:focus{
     background-color: rgba(255,255,255,0.3);
@@ -110,6 +108,8 @@
     font-weight: 600;
     border-radius: 5px;
     cursor: pointer;
+    outline: none;
+    border: none;
 }
 .submit-btn:hover{
     opacity: 0.8;
@@ -148,5 +148,6 @@
 
 .questions-section{
     margin-top: 12px;
+    color: white;
 }
 

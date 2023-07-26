@@ -1,0 +1,33 @@
+.popup-section{
+    background-color: rgb(47, 46, 46);
+    color: white;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.popup-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+}
+
+.close-popup{
+    position: absolute;
+    top: -12px;
+    right:0;
+    color: red;
+    font-size: 40px;
+    cursor: pointer;
+}
+.close-popup:hover{
+    opacity: 0.67;
+}   

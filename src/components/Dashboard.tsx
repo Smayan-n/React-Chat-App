@@ -1,25 +1,30 @@
 import { getAuth } from "firebase/auth";
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { findUsersWithName, getAppUser } from "../Utility/databaseUtility";
-import { AppGroup, AppUser } from "../Utility/interfaces";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AppGroup } from "../Utility/interfaces";
 import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/Dashboard.css";
-import ChatGroup from "./ChatGroup";
+import ChatGroups from "./ChatGroups";
 import ChatInterface from "./ChatInterface";
 import NavBar from "./NavBar";
 
 function Dashboard() {
 	const { currentUser } = useAuth()!;
-	const { addGroupToDatabase, addMessageToDatabase, chatGroups, messages, listenToMsgsFrom } = useFirestore()!;
+	const { addMessageToDatabase, chatGroups, messages, listenToMsgsFrom } = useFirestore()!;
+	const [loading, setLoading] = useState(false);
 
-	const [users, setUsers] = useState<AppUser[]>([]);
 	const [currentGroup, setCurrentGroup] = useState<AppGroup | null>(null);
 	// const [messages, setMessages] = useState<AppMessage[] | null>(null);
 
 	const navigate = useNavigate();
+
+	//go back to login page is user is not signed in
+	useEffect(() => {
+		if (!currentUser) navigate("/login");
+	}, [currentUser, navigate]);
+
 	const logOut = () => {
 		const auth = getAuth();
 		auth.signOut()
@@ -32,55 +37,31 @@ function Dashboard() {
 			});
 	};
 
-	async function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-		const usersFound = await findUsersWithName(e.target.value);
-		setUsers(usersFound);
-	}
-
-	async function addUser(user: AppUser) {
-		const user1 = (await getAppUser(currentUser!.uid)) as AppUser;
-		await addGroupToDatabase(user1, user);
-	}
-
 	async function handleSendMessage(message: string) {
 		await addMessageToDatabase(currentGroup!.groupId, message, currentUser!.uid);
 	}
 
-	function handleGroupSet(groupOn: AppGroup) {
+	async function handleGroupSet(groupOn: AppGroup) {
+		setLoading(true);
 		setCurrentGroup(groupOn);
-		listenToMsgsFrom(groupOn.groupId);
+		await listenToMsgsFrom(groupOn.groupId);
+		setLoading(false);
 	}
 
 	return (
 		<>
+			{currentUser && <button onClick={logOut}>Log Out</button>}
 			<NavBar />
-			{/* {currentUser && <button onClick={logOut}>Log Out</button>}
-			<input onChange={handleInputChange}></input>
-			<ul>
-				{users &&
-					users.map((user) => (
-						<li key={user.email}>
-							{user.username} | {user.email}
-							<button
-								onClick={() => {
-									addUser(user);
-								}}
-							>
-								Add User
-							</button>
-						</li>
-					))}
-			</ul> */}
 
 			<section className="main-chats-section">
-				<div className="chat-groups">
-					{chatGroups &&
-						chatGroups.map((group: AppGroup) => {
-							return <ChatGroup key={group.groupId} onGroupSet={handleGroupSet} group={group} />;
-						})}
-				</div>
+				<ChatGroups groups={chatGroups} onGroupSet={handleGroupSet} />
 
-				<ChatInterface onSendMessage={handleSendMessage} group={currentGroup} messages={messages} />
+				<ChatInterface
+					loading={loading}
+					onSendMessage={handleSendMessage}
+					group={currentGroup}
+					messages={messages}
+				/>
 			</section>
 		</>
 	);

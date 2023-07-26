@@ -1,6 +1,6 @@
 import { FirebaseError } from "firebase/app";
-import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { replaceAll } from "../Utility/utilityFunctions";
 import googleIcon from "../assets/google.svg";
 import { useAuth } from "../contexts/AuthContext";
@@ -14,7 +14,13 @@ function LoginPage() {
 	const [error, setError] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const { login, signInWithGoogle, navigateToDashboard } = useAuth()!;
+	const { login, signInWithGoogle, navigateToDashboard, currentUser } = useAuth()!;
+
+	const navigate = useNavigate();
+	useEffect(() => {
+		if (currentUser) navigate("/dashboard");
+	}, [currentUser, navigate]);
+
 	const loginUser = async () => {
 		const [email, password] = [emailRef.current!.value, passwordRef.current!.value];
 		//input field validation

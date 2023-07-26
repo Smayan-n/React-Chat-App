@@ -22,24 +22,4 @@ async function getAppUser(uid: string): Promise<AppUser | null> {
 	});
 }
 
-async function findUsersWithName(searchTerm: string): Promise<AppUser[]> {
-	const ref = collection(firestoreDB, "users");
-
-	//queries all names starting with searchTerm
-	const usersQuery = query(
-		ref,
-		where("username", ">=", searchTerm),
-		where("username", "<=", searchTerm.toLowerCase() + "\uf8ff") //any string of chars after searchTerm
-	);
-	const querySnapshot = await getDocs(usersQuery);
-	const users: AppUser[] = [];
-	querySnapshot.forEach((doc) => {
-		users.push(doc.data() as AppUser);
-	});
-
-	return new Promise<AppUser[]>((resolve) => {
-		resolve(users);
-	});
-}
-
-export { addUserToDatabase, findUsersWithName, getAppUser };
+export { addUserToDatabase, getAppUser };

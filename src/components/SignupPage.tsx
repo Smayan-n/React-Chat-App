@@ -1,6 +1,6 @@
 import { FirebaseError } from "firebase/app";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { addUserToDatabase } from "../Utility/databaseUtility";
 import { replaceAll } from "../Utility/utilityFunctions";
 import googleIcon from "../assets/google.svg";
@@ -17,7 +17,12 @@ function SignupPage() {
 	const [error, setError] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const { signUp, signInWithGoogle, navigateToDashboard, setUsername } = useAuth()!;
+	const { signUp, signInWithGoogle, navigateToDashboard, setUsername, currentUser } = useAuth()!;
+
+	const navigate = useNavigate();
+	useEffect(() => {
+		if (currentUser) navigate("/dashboard");
+	}, [currentUser, navigate]);
 
 	const createUser = async () => {
 		const [name, email, password, confirmPassword] = [
@@ -62,10 +67,6 @@ function SignupPage() {
 		e.preventDefault();
 		void createUser();
 	}
-
-	useEffect(() => {
-		console.log("useEffect");
-	}, []);
 
 	return (
 		<>

@@ -14,8 +14,9 @@ interface FirestoreObject {
 	chatGroups: AppGroup[];
 	messages: AppMessage[];
 	addMessageToDatabase: (groupId: string, message: string, uid: string) => Promise<void>;
-	addGroupToDatabase: (user1: AppUser, user2: AppUser) => Promise<void>;
-	listenToMsgsFrom: (groupId: string) => void;
+	addGroupToDatabase: (groupMembers: AppUser[], groupName: string) => Promise<void>;
+	listenToMsgsFrom: (groupId: string) => Promise<void>;
+	findUsersWithName: (name: string) => Promise<AppUser[]>;
 }
 //Props
 interface AuthProviderProps {
@@ -34,20 +35,31 @@ interface LoaderProps {
 	message: string;
 }
 
-interface ChatGroupProps {
-	group: AppGroup;
-	onGroupSet: (group: AppGroup) => void;
-}
-
 interface ChatInterfaceProps {
 	group: AppGroup | null;
 	messages: AppMessage[];
 	onSendMessage: (message: string) => Promise<void>;
+	loading: boolean;
 }
 
 interface MessageProps {
 	message: AppMessage;
 	leftorright: string;
+}
+
+interface ChatGroupsProps {
+	groups: AppGroup[];
+	onGroupSet: (group: AppGroup) => Promise<void>;
+}
+
+interface PopupProps {
+	children: React.ReactNode;
+	isOpen: boolean;
+	onClose: () => void;
+}
+
+interface CreateGroupChatProps {
+	onClose: () => void;
 }
 
 //types for documents retrieved from the database
@@ -79,10 +91,12 @@ export type {
 	AppUser,
 	AuthObject,
 	AuthProviderProps,
-	ChatGroupProps,
+	ChatGroupsProps,
 	ChatInterfaceProps,
+	CreateGroupChatProps,
 	FirestoreObject,
 	FirestoreProviderProps,
 	LoaderProps,
 	MessageProps,
+	PopupProps,
 };
