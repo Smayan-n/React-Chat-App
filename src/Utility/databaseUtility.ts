@@ -1,5 +1,5 @@
 import { User } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { DocumentSnapshot, collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { firestoreDB } from "./firebase";
 import { AppUser } from "./interfaces";
 
@@ -22,4 +22,21 @@ async function getAppUser(uid: string): Promise<AppUser | null> {
 	});
 }
 
-export { addUserToDatabase, getAppUser };
+async function getUsersFromIds(ids: string[]): Promise<AppUser[]> {
+	//return an array of AppUser objects from an array of user ids
+	const users: AppUser[] = [];
+	const promises: Promise<DocumentSnapshot>[] = [];
+	ids.forEach((id) => {
+		const ref = doc(firestoreDB, `users/${id}`);
+		promises.push(getDoc(ref));
+	});
+	const docs: DocumentSnapshot[] = await Promise.all(promises);
+	docs.forEach((doc) => {
+		if (doc.exists()) {
+			users.push(doc.data() as AppUser);
+		}
+	});
+	return users;
+}
+
+export { addUserToDatabase, getAppUser, getUsersFromIds };

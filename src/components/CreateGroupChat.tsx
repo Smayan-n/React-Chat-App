@@ -1,18 +1,32 @@
 import { useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
+import { getUsersFromIds } from "../Utility/databaseUtility";
 import { AppUser, CreateGroupChatProps } from "../Utility/interfaces";
 import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/CreateGroupChat.css";
 import Loader from "./Loader";
 
-function CreateGroupChat({ onClose }: CreateGroupChatProps) {
+function CreateGroupChat({ onClose, group }: CreateGroupChatProps) {
 	const [users, setUsers] = useState<AppUser[]>([]);
 	const [usersToAdd, setUsersToAdd] = useState<AppUser[]>([]);
 	const [loading, setLoading] = useState(false);
 
 	const groupNameRef = useRef<HTMLInputElement>(null);
 
-	const { addGroupToDatabase, findUsersWithName } = useFirestore()!;
+	const { addGroupToDatabase, updateGroup, findUsersWithName } = useFirestore()!;
+
+	//load existing group members if any
+	useEffect(() => {
+		async function setUserArrays() {
+			if (group) {
+				setLoading(true);
+				const groupMembers = await getUsersFromIds(group.members);
+				setUsersToAdd(groupMembers);
+				setLoading(false);
+			}
+		}
+		void setUserArrays();
+	}, [group]);
 
 	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setLoading(true);
@@ -46,17 +60,28 @@ function CreateGroupChat({ onClose }: CreateGroupChatProps) {
 
 	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
-		//create a new group
-		void addGroupToDatabase(usersToAdd, groupNameRef.current?.value as string);
+		//create a new group or update depending on groups
+		if (group) {
+			//update
+			void updateGroup(group.groupId, usersToAdd, groupNameRef.current?.value as string);
+		} else {
+			void addGroupToDatabase(usersToAdd, groupNameRef.current?.value as string);
+		}
 		//close popup
 		onClose();
 	}
 
 	return (
 		<section className="create-chat-section">
-			<h3 className="create-title">Create a new group chat!</h3>
+			<h3 className="create-title">{group ? "Edit Group Chat" : "Create a new group chat!"}</h3>
 			<form onSubmit={handleSubmit} className="create-group-form">
-				<input ref={groupNameRef} type="text" className="create-group-input" placeholder="Chat Name" />
+				<input
+					defaultValue={group ? group.groupName : ""}
+					ref={groupNameRef}
+					type="text"
+					className="create-group-input"
+					placeholder="Chat Name"
+				/>
 				<input
 					onChange={handleInputChange}
 					type="text"
@@ -69,7 +94,7 @@ function CreateGroupChat({ onClose }: CreateGroupChatProps) {
 					{usersToAdd &&
 						usersToAdd.map((user: AppUser) => {
 							return (
-								<div className="added-user">
+								<div key={user.uid} className="added-user">
 									{user.username}
 									<div onClick={() => handleDelUser(user)} className="added-user-del">
 										&times;
@@ -98,7 +123,7 @@ function CreateGroupChat({ onClose }: CreateGroupChatProps) {
 				</div>
 
 				<button className="create-group-btn" type="submit">
-					Create Group
+					{group ? "Edit Group" : "Create Group"}
 				</button>
 			</form>
 		</section>

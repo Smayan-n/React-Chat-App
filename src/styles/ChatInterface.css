@@ -1,12 +1,25 @@
+.no-chat-open{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 72%;
+    /* max-width: 867px; */
+    height: 100%;
+    font-size: 30px;
+    font-weight: 600;
+}
+
 
 .chat-interface-section{
-    background-color: grey;
+    background-color: var(--color-background);
     display: flex;
     flex-flow: column wrap;
     justify-content: space-between;
-    width: 75%;
+    align-items: space-between;
+    width: 72%;
     /* max-width: 867px; */
-    height: 90%;
+    height: 100%;
     /* border: 2px solid white; */
     border-radius: 5px;
     box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
@@ -15,25 +28,51 @@
 .chat-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    height: 50px;
     padding: 10px;
     /* border-bottom: 2px solid #ddd; */
-    background: #eee;
-    color: #666;
+    background: var(--color-background);
+    color: white;
+    box-shadow: 0px 7px 5px 5px rgba(41, 41, 41, 0.8);
   }
+
+
+  .chat-header-settings{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+  }
+
+.info-chat-btn, .edit-chat-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 5px;
+
+}
+.info-chat-btn:hover, .edit-chat-btn:hover{
+    background-color: #4d4d4d;
+}
 
 .chat-input-form{
     display: flex;
     flex-direction: row;
     padding: 10px;
     /* border-top: 2px solid #ddd; */
-    background: rgb(143, 143, 143);
+    background: var(--color-background);
+    box-shadow: 0px -5px 5px 4px rgba(41, 41, 41, 0.8);
+
 }
 
 .chat-input-form *{
-    padding: 10px;
-    border: none;
+    padding: 12px;
     border-radius: 3px;
-    font-size: 1em;
+    font-size: 1.1em;
     outline: none;
     border: none;
     
@@ -41,8 +80,14 @@
 
 .msg-input{
     flex: 1;
-    background: #ddd;
-    color: black;
+    background: #444343;
+    color: white;
+}
+.msg-input::placeholder{
+    color: rgb(174, 174, 174);
+}
+.msg-input:focus::placeholder{
+    color: rgb(213, 210, 210);
 }
 
 .send-msg-btn{
@@ -60,7 +105,7 @@
     position: relative;
 }
 .main-chat-area::-webkit-scrollbar{
-    width: 7px;
+    width: 9px;
 }
 .main-chat-area::-webkit-scrollbar-track {
     background: #ddd;

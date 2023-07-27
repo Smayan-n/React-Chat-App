@@ -16,7 +16,6 @@ function Dashboard() {
 	const [loading, setLoading] = useState(false);
 
 	const [currentGroup, setCurrentGroup] = useState<AppGroup | null>(null);
-	// const [messages, setMessages] = useState<AppMessage[] | null>(null);
 
 	const navigate = useNavigate();
 
@@ -25,7 +24,18 @@ function Dashboard() {
 		if (!currentUser) navigate("/login");
 	}, [currentUser, navigate]);
 
-	const logOut = () => {
+	useEffect(() => {
+		//when group is edited, set current group to updated one from database - so it is properly rendered in chatInterface
+		if (currentGroup) {
+			chatGroups.forEach((group: AppGroup) => {
+				if (group.groupId === currentGroup.groupId) {
+					setCurrentGroup(group);
+				}
+			});
+		}
+	}, [chatGroups, currentGroup]);
+
+	function handleLogOut() {
 		const auth = getAuth();
 		auth.signOut()
 			.then(() => {
@@ -35,23 +45,27 @@ function Dashboard() {
 			.catch((error) => {
 				console.log(error, "error signing out");
 			});
-	};
+	}
 
 	async function handleSendMessage(message: string) {
 		await addMessageToDatabase(currentGroup!.groupId, message, currentUser!.uid);
 	}
 
-	async function handleGroupSet(groupOn: AppGroup) {
+	function handleGroupSet(groupOn: AppGroup) {
 		setLoading(true);
 		setCurrentGroup(groupOn);
-		await listenToMsgsFrom(groupOn.groupId);
-		setLoading(false);
+		listenToMsgsFrom(groupOn.groupId)
+			.then(() => {
+				setLoading(false);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 	}
 
 	return (
 		<>
-			{currentUser && <button onClick={logOut}>Log Out</button>}
-			<NavBar />
+			<NavBar onLogOut={handleLogOut} />
 
 			<section className="main-chats-section">
 				<ChatGroups groups={chatGroups} onGroupSet={handleGroupSet} />

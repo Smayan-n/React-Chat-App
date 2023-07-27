@@ -73,6 +73,14 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 		});
 	}
 
+	async function updateGroup(groupId: string, groupMembers: AppUser[], groupName: string) {
+		const ref = doc(firestoreDB, `chatGroups/${groupId}`);
+		await updateDoc(ref, {
+			members: [...groupMembers.map((member: AppUser) => member.uid)],
+			groupName: groupName,
+		});
+	}
+
 	async function addMessageToDatabase(groupId: string, message: string, uid: string) {
 		const ref = collection(firestoreDB, `chatGroups/${groupId}/messages`);
 		await addDoc(ref, {
@@ -148,6 +156,7 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 	}, [currentUser]);
 
 	const value: FirestoreObject = {
+		updateGroup,
 		findUsersWithName,
 		addGroupToDatabase,
 		addMessageToDatabase,

@@ -15,6 +15,8 @@ interface FirestoreObject {
 	messages: AppMessage[];
 	addMessageToDatabase: (groupId: string, message: string, uid: string) => Promise<void>;
 	addGroupToDatabase: (groupMembers: AppUser[], groupName: string) => Promise<void>;
+	updateGroup: (groupId: string, groupMembers: AppUser[], groupName: string) => Promise<void>;
+
 	listenToMsgsFrom: (groupId: string) => Promise<void>;
 	findUsersWithName: (name: string) => Promise<AppUser[]>;
 }
@@ -49,7 +51,7 @@ interface MessageProps {
 
 interface ChatGroupsProps {
 	groups: AppGroup[];
-	onGroupSet: (group: AppGroup) => Promise<void>;
+	onGroupSet: (group: AppGroup) => void;
 }
 
 interface PopupProps {
@@ -60,6 +62,7 @@ interface PopupProps {
 
 interface CreateGroupChatProps {
 	onClose: () => void;
+	group?: AppGroup | null;
 }
 
 //types for documents retrieved from the database
