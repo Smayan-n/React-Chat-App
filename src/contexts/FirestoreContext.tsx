@@ -1,16 +1,13 @@
-import { Unsubscribe, User } from "firebase/auth";
+import { Unsubscribe } from "firebase/auth";
 import {
 	addDoc,
 	collection,
 	doc,
-	getDoc,
 	getDocs,
-	limit,
 	onSnapshot,
 	orderBy,
 	query,
 	serverTimestamp,
-	setDoc,
 	updateDoc,
 	where,
 } from "firebase/firestore";
@@ -113,8 +110,9 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 						const msg: AppMessage = doc.data() as AppMessage;
 						msg.timeSent && msgs.push(msg);
 					});
-					//sort messages by time sent
-					void updateUserCache(msgs, resolve);
+					// void updateUserCache(msgs, resolve);
+					setMessages(msgs);
+					resolve();
 				},
 				(error) => {
 					console.log(error);
@@ -124,22 +122,6 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 
 			unsubRef.current = unsubscribe;
 		});
-
-		//update user cache to include all message senders
-		async function updateUserCache(msgs: AppMessage[], resolve: (value: void | PromiseLike<void>) => void) {
-			for (const msg of msgs) {
-				if (!userCache.has(msg.sender)) {
-					const user = await getAppUser(msg.sender);
-					if (user) {
-						userCache.set(user.uid, user);
-						console.log(userCache);
-					}
-				}
-			}
-
-			setMessages(msgs);
-			resolve();
-		}
 	}
 
 	async function updateUserDatabaseProfile(name: string, email?: string) {
@@ -156,10 +138,32 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 		}
 	}
 
+	//update user cache here whenever chatGroups changes
+	//this way userCache will store all users in logged in user's groups
+	useEffect(() => {
+		async function updateUserCache() {
+			if (chatGroups.length !== 0) {
+				//all members of all user groups
+				for (const group of chatGroups) {
+					for (const memberId of group.members) {
+						if (!userCache.has(memberId)) {
+							const user = await getAppUser(memberId);
+							if (user) {
+								userCache.set(memberId, user);
+							}
+						}
+					}
+				}
+			}
+		}
+		void updateUserCache();
+	}, [chatGroups, userCache]);
+
 	useEffect(() => {
 		//reset messages and chatGroups array on each re-render to prevent other users viewing wrong messages
 		setMessages([]);
 		setChatGroups([]);
+		setUserCache(new Map());
 
 		//onSnapshot to update chatGroups automatically
 		//load groups in which the current user is in only

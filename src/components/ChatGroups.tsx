@@ -1,9 +1,8 @@
-import { Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoIosCreate } from "react-icons/io";
 import { getLatestMessagesFrom } from "../Utility/databaseUtility";
-import { AppGroup, AppMessage, AppObjects, ChatGroupsProps } from "../Utility/interfaces";
-import { getDateFromTimeStamp, getTimeFromTimestamp } from "../Utility/utilityFunctions";
+import { AppGroup, AppMessage, ChatGroupsProps } from "../Utility/interfaces";
+import { getDateFromTimeStamp } from "../Utility/utilityFunctions";
 import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/ChatGroups.css";
 import CreateGroupChat from "./CreateGroupChat";
@@ -15,7 +14,9 @@ function ChatGroups(props: ChatGroupsProps) {
 	const { groups, currentGroup, onGroupSet } = props;
 	const [popupOpen, setPopupOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const [latestMessages, setLatestMessages] = useState<Map<string, AppObjects> | null>(null);
+	const [latestMessages, setLatestMessages] = useState<Map<string, AppMessage> | null>(null);
+
+	const { userCache } = useFirestore()!;
 
 	//load latest messages from each group chat
 	useEffect(() => {
@@ -32,9 +33,9 @@ function ChatGroups(props: ChatGroupsProps) {
 
 	function getLatestMessageTime(groupId: string) {
 		if (latestMessages) {
-			const obj: AppObjects | undefined = latestMessages.get(groupId);
-			if (obj?.message) {
-				return getDateFromTimeStamp(obj.message.timeSent);
+			const message: AppMessage | undefined = latestMessages.get(groupId);
+			if (message) {
+				return getDateFromTimeStamp(message.timeSent);
 			}
 		}
 		return "";
@@ -42,9 +43,9 @@ function ChatGroups(props: ChatGroupsProps) {
 
 	function getLatestMessage(groupId: string) {
 		if (latestMessages) {
-			const obj: AppObjects | undefined = latestMessages.get(groupId);
-			if (obj?.user && obj?.message) {
-				return obj.user.username + ": " + obj.message.messageContent;
+			const message: AppMessage | undefined = latestMessages.get(groupId);
+			if (message) {
+				return (userCache.get(message.sender)?.username as string) + ": " + message.messageContent;
 			}
 		}
 		return "No messages yet";

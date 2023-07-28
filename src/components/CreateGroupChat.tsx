@@ -1,4 +1,3 @@
-import { Timestamp } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { getUsersFromIds } from "../Utility/databaseUtility";
@@ -10,11 +9,15 @@ import Alert from "./Alert";
 
 //this component is also used to edit and display group info
 //props includes group (for edit) and info (for showing group info)
-function CreateGroupChat({ onClose, group, info }: CreateGroupChatProps) {
+function CreateGroupChat(props: CreateGroupChatProps) {
+	const { onClose, group, info } = props;
+
 	const [users, setUsers] = useState<AppUser[]>([]);
 	const [groupMembers, setGroupMembers] = useState<AppUser[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+
+	const { userCache } = useFirestore()!;
 
 	const groupNameRef = useRef<HTMLInputElement>(null);
 
@@ -22,18 +25,13 @@ function CreateGroupChat({ onClose, group, info }: CreateGroupChatProps) {
 
 	//load existing group members if any
 	useEffect(() => {
-		async function setUserArrays() {
-			if (group) {
-				setLoading(true);
-				const groupMembers = await getUsersFromIds(group.members);
-				setGroupMembers(groupMembers);
-				setLoading(false);
-			}
+		if (group) {
+			const grpMembs: AppUser[] = group?.members.map((memberId: string) => userCache.get(memberId)) as AppUser[];
+			setGroupMembers(grpMembs);
 		}
-		void setUserArrays();
-	}, [group]);
+	}, [group, userCache]);
 
-	function getGroupCreator(uid: string): string {
+	function getGroupCreatorName(uid: string): string {
 		const groupCreator = groupMembers.find((member: AppUser) => member.uid === uid);
 		return groupCreator ? groupCreator.username : "";
 	}
@@ -89,7 +87,7 @@ function CreateGroupChat({ onClose, group, info }: CreateGroupChatProps) {
 			void addGroupToDatabase(groupMembers, groupName as string);
 		}
 		//close popup
-		onClose();
+		onClose && onClose();
 	}
 
 	return (
@@ -107,7 +105,7 @@ function CreateGroupChat({ onClose, group, info }: CreateGroupChatProps) {
 					</div>
 					<div className="group-creator">
 						<h4>group creator: </h4>
-						{getGroupCreator(group!.createdBy)}
+						{getGroupCreatorName(group!.createdBy)}
 					</div>
 
 					{groupMembers.length === 0 ? <div>No users to show</div> : <div>Group members: </div>}

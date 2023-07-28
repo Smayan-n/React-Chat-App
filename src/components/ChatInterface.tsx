@@ -24,16 +24,12 @@ function ChatInterface(props: ChatInterfaceProps) {
 	const dummyRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		console.log(loading);
-	}, [loading]);
-
-	useEffect(() => {
 		//scroll after some time because messages take time to be rendered after sending
 
 		setTimeout(() => {
 			// setUserRecentSentMsg(null);
 			dummyRef.current && dummyRef.current.scrollIntoView({ behavior: "smooth" });
-		}, 500);
+		}, 250);
 
 		// console.log(messagesToDisp);
 	}, [messages]);

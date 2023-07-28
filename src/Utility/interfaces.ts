@@ -97,17 +97,10 @@ interface AppGroup {
 	createdAt: Timestamp;
 }
 
-interface AppObjects {
-	group?: AppGroup | null;
-	user?: AppUser | null;
-	message?: AppMessage | null;
-}
-
 export type {
 	AlertProps,
 	AppGroup,
 	AppMessage,
-	AppObjects,
 	AppUser,
 	AuthObject,
 	AuthProviderProps,

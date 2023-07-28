@@ -1,14 +1,11 @@
-import { getAuth } from "firebase/auth";
-
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppGroup } from "../Utility/interfaces";
 import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/Dashboard.css";
 import ChatGroups from "./ChatGroups";
 import ChatInterface from "./ChatInterface";
-import Loader from "./Loader";
 import NavBar from "./NavBar";
 
 function Dashboard() {
