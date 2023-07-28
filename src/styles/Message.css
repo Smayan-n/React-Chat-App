@@ -2,11 +2,14 @@
 .msg{
     display: flex;
     color: black;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     align-items: center;
+    font-size: 19px;
+    font-weight: 500;
 }
 .left-msg{
     justify-content: flex-start;
+
 }
 
 .right-msg{
@@ -35,7 +38,9 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    color: grey;
+    color: rgb(96, 93, 93);
     gap: 18px;
+    font-weight: 410;
+    font-size: 17px;
 }
 

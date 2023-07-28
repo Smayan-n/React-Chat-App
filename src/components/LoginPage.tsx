@@ -51,7 +51,7 @@ function LoginPage() {
 
 	return (
 		<>
-			{error && <Alert setError={setError} message={error}></Alert>}
+			{error && <Alert onClose={() => setError("")} message={error}></Alert>}
 			<div className="background">
 				<div className="shape"></div>
 				<div className="shape"></div>

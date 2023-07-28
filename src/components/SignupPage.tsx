@@ -17,7 +17,7 @@ function SignupPage() {
 	const [error, setError] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const { signUp, signInWithGoogle, navigateToDashboard, setUsername, currentUser } = useAuth()!;
+	const { signUp, signInWithGoogle, navigateToDashboard, updateUserProfile, currentUser } = useAuth()!;
 
 	const navigate = useNavigate();
 	useEffect(() => {
@@ -45,7 +45,7 @@ function SignupPage() {
 
 				const userCredential = await signUp(email, password);
 				//set username
-				await setUsername(name);
+				await updateUserProfile(name);
 				//after navigating to dash, all user fields should be set
 				await navigateToDashboard();
 
@@ -70,7 +70,7 @@ function SignupPage() {
 
 	return (
 		<>
-			{error && <Alert setError={setError} message={error} />}
+			{error && <Alert onClose={() => setError("")} message={error} />}
 			<div className="background">
 				<div className="shape"></div>
 				<div className="shape"></div>

@@ -5,6 +5,7 @@ import {
 	getAuth,
 	signInWithEmailAndPassword,
 	signInWithPopup,
+	updateEmail,
 	updateProfile,
 } from "firebase/auth";
 import React, { useContext, useEffect, useState } from "react";
@@ -49,10 +50,13 @@ function AuthProvider(props: AuthProviderProps) {
 		return signInWithEmailAndPassword(getAuth(), email, password);
 	}
 
-	function setUsername(name: string) {
-		//update username in firebase using auth's current user
+	function updateUserProfile(name: string, email?: string) {
+		//update username and email in firebase using auth's current user
+		if (email) {
+			void updateEmail(getAuth().currentUser!, email);
+		}
 		return updateProfile(getAuth().currentUser!, {
-			displayName: name,
+			displayName: name.toLowerCase(),
 		});
 	}
 
@@ -83,7 +87,7 @@ function AuthProvider(props: AuthProviderProps) {
 		signInWithGoogle,
 		login,
 		navigateToDashboard,
-		setUsername: setUsername,
+		updateUserProfile,
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

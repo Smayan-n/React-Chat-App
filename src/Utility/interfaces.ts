@@ -7,15 +7,17 @@ interface AuthObject {
 	signInWithGoogle: () => void;
 	login: (email: string, password: string) => Promise<UserCredential>;
 	navigateToDashboard: () => Promise<void>;
-	setUsername: (name: string) => Promise<void>;
+	updateUserProfile: (name: string, email?: string) => Promise<void>;
 }
 
 interface FirestoreObject {
 	chatGroups: AppGroup[];
 	messages: AppMessage[];
+	userCache: Map<string, AppUser>;
 	addMessageToDatabase: (groupId: string, message: string, uid: string) => Promise<void>;
 	addGroupToDatabase: (groupMembers: AppUser[], groupName: string) => Promise<void>;
 	updateGroup: (groupId: string, groupMembers: AppUser[], groupName: string) => Promise<void>;
+	updateUserDatabaseProfile: (name: string, email?: string) => Promise<void>;
 
 	listenToMsgsFrom: (groupId: string) => Promise<void>;
 	findUsersWithName: (name: string) => Promise<AppUser[]>;
@@ -30,7 +32,7 @@ interface FirestoreProviderProps {
 
 interface AlertProps {
 	message: string;
-	setError: React.Dispatch<React.SetStateAction<string>>;
+	onClose: () => void;
 }
 
 interface LoaderProps {
@@ -39,8 +41,6 @@ interface LoaderProps {
 
 interface ChatInterfaceProps {
 	group: AppGroup | null;
-	messages: AppMessage[];
-	onSendMessage: (message: string) => Promise<void>;
 	loading: boolean;
 }
 
@@ -49,9 +49,18 @@ interface MessageProps {
 	leftorright: string;
 }
 
+interface EditUserProps {
+	onClose: () => void;
+}
+interface TooltipProps {
+	children: React.ReactNode;
+	position?: string; //top or bottom
+}
+
 interface ChatGroupsProps {
 	groups: AppGroup[];
 	onGroupSet: (group: AppGroup) => void;
+	currentGroup: AppGroup | null;
 }
 
 interface PopupProps {
@@ -61,8 +70,9 @@ interface PopupProps {
 }
 
 interface CreateGroupChatProps {
-	onClose: () => void;
+	onClose?: () => void;
 	group?: AppGroup | null;
+	info?: boolean;
 }
 
 //types for documents retrieved from the database
@@ -87,19 +97,28 @@ interface AppGroup {
 	createdAt: Timestamp;
 }
 
+interface AppObjects {
+	group?: AppGroup | null;
+	user?: AppUser | null;
+	message?: AppMessage | null;
+}
+
 export type {
 	AlertProps,
 	AppGroup,
 	AppMessage,
+	AppObjects,
 	AppUser,
 	AuthObject,
 	AuthProviderProps,
 	ChatGroupsProps,
 	ChatInterfaceProps,
 	CreateGroupChatProps,
+	EditUserProps,
 	FirestoreObject,
 	FirestoreProviderProps,
 	LoaderProps,
 	MessageProps,
 	PopupProps,
+	TooltipProps,
 };

@@ -1,0 +1,37 @@
+.tooltip{
+    position: absolute;
+	bottom: 47px;
+	background-color: rgb(109, 109, 109);
+	color: white;
+	font-size: 14px;
+	opacity: 0;
+	padding-left: 9px;
+	padding-right: 9px;
+	padding-top: 10px;
+	padding-bottom: 10px;	
+	border-radius: 4px;
+	transition: opacity 0.2s;
+	pointer-events: none;
+	white-space: nowrap;
+    z-index:1000;
+  }
+
+  .tip-bottom{
+    bottom: -47px;
+  }
+
+.info-chat-btn,
+.edit-chat-btn,
+.logout-btn,
+.profile-icon,
+.create-chat-btn{
+    position: relative;
+}
+
+.info-chat-btn:hover .tooltip,
+.edit-chat-btn:hover .tooltip,
+.logout-btn:hover .tooltip,
+.profile-icon:hover .tooltip,
+.create-chat-btn:hover .tooltip{
+    opacity: 0.95;
+}

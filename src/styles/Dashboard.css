@@ -1,8 +1,16 @@
-.main-chats-section{
-    display: flex;
-    flex-direction: row;
+
+
+.dashboard-section{
     height: 100%;
-    justify-content: space-between;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
 
 }
 
+.main-chats-section{
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+
+}

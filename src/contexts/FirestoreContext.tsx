@@ -5,7 +5,9 @@ import {
 	doc,
 	getDoc,
 	getDocs,
+	limit,
 	onSnapshot,
+	orderBy,
 	query,
 	serverTimestamp,
 	setDoc,
@@ -13,9 +15,9 @@ import {
 	where,
 } from "firebase/firestore";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { getAppUser } from "../Utility/databaseUtility";
 import { firestoreDB } from "../Utility/firebase";
 import { AppGroup, AppMessage, AppUser, FirestoreObject, FirestoreProviderProps } from "../Utility/interfaces";
-import { sortMessagesByTime } from "../Utility/utilityFunctions";
 import { useAuth } from "./AuthContext";
 
 const FirestoreContext = React.createContext<FirestoreObject | null>(null);
@@ -30,6 +32,8 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 
 	const [chatGroups, setChatGroups] = useState<AppGroup[]>([]);
 	const [messages, setMessages] = useState<AppMessage[]>([]);
+	//uid: User
+	const [userCache, setUserCache] = useState<Map<string, AppUser>>(new Map());
 	const unsubRef = useRef<Unsubscribe>();
 
 	async function findUsersWithName(searchTerm: string): Promise<AppUser[]> {
@@ -98,7 +102,7 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 
 			//attach new listener to given group
 			const ref = collection(firestoreDB, `chatGroups/${groupId}/messages`);
-			const q = query(ref);
+			const q = query(ref, orderBy("timeSent")); //make sure messages are in order
 			const unsubscribe = onSnapshot(
 				q,
 				(querySnapshot) => {
@@ -106,11 +110,11 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 					querySnapshot.forEach((doc) => {
 						//ServerTimestamp() updates doc value on server so first snapshot call causes time to be null
 						//if timesent is null, errors are caused...
-						doc.data().timeSent && msgs.push(doc.data() as AppMessage);
+						const msg: AppMessage = doc.data() as AppMessage;
+						msg.timeSent && msgs.push(msg);
 					});
 					//sort messages by time sent
-					setMessages(sortMessagesByTime(msgs));
-					resolve();
+					void updateUserCache(msgs, resolve);
 				},
 				(error) => {
 					console.log(error);
@@ -120,13 +124,45 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 
 			unsubRef.current = unsubscribe;
 		});
+
+		//update user cache to include all message senders
+		async function updateUserCache(msgs: AppMessage[], resolve: (value: void | PromiseLike<void>) => void) {
+			for (const msg of msgs) {
+				if (!userCache.has(msg.sender)) {
+					const user = await getAppUser(msg.sender);
+					if (user) {
+						userCache.set(user.uid, user);
+						console.log(userCache);
+					}
+				}
+			}
+
+			setMessages(msgs);
+			resolve();
+		}
+	}
+
+	async function updateUserDatabaseProfile(name: string, email?: string) {
+		if (currentUser) {
+			const ref = doc(firestoreDB, `users/${currentUser.uid}`);
+			await updateDoc(ref, {
+				username: name.toLowerCase(),
+			});
+			if (email) {
+				await updateDoc(ref, {
+					email: email,
+				});
+			}
+		}
 	}
 
 	useEffect(() => {
-		//reset messages array on each re-render to prevent other users viewing wrong messages
+		//reset messages and chatGroups array on each re-render to prevent other users viewing wrong messages
 		setMessages([]);
+		setChatGroups([]);
 
-		//add onSnapshot to update chatGroups automatically
+		//onSnapshot to update chatGroups automatically
+		//load groups in which the current user is in only
 		let unsubGroupSnapshot: Unsubscribe | null = null;
 		if (currentUser) {
 			const ref = collection(firestoreDB, "chatGroups");
@@ -144,8 +180,6 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 					console.log(error);
 				}
 			);
-		} else {
-			//
 		}
 
 		return () => {
@@ -161,6 +195,8 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 		addGroupToDatabase,
 		addMessageToDatabase,
 		listenToMsgsFrom,
+		updateUserDatabaseProfile,
+		userCache,
 		chatGroups,
 		messages,
 	};

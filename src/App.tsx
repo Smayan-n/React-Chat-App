@@ -13,6 +13,15 @@ init();
 function App() {
 	return (
 		<>
+			{/* <section className="outer">
+				<section className="dash">
+					<div className="navbar-"></div>
+					<div className="chats-section-">
+						<div className="groups-"></div>
+						<div className="interface"></div>
+					</div>
+				</section>
+			</section> */}
 			<section className="main-app-section">
 				<AuthProvider>
 					<FirestoreProvider>

@@ -1,0 +1,52 @@
+
+.edit-user-section{
+    min-width: 500px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap:18px;
+}
+
+.edit-user-input{
+    display: block;
+    height: 50px;
+    width: 100%;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    padding: 0 10px;
+    margin-top: 8px;
+    font-size: 17px;
+    font-weight: 300;
+    outline: none;
+    border:  none;
+    margin-bottom: 8px;
+}
+.edit-user-input:focus{
+    background-color: rgba(255,255,255,0.2);
+}
+.edit-user-input:focus::placeholder{
+    color: rgb(178, 178, 178);
+}
+.edit-user-input::placeholder{
+    color: #c6c5c5;
+    font-weight: 400;
+
+}
+.edit-user-form{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+.edit-user-btn{
+    background: rgb(0, 196, 65);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    padding: 10px;
+    font-size: 18px;
+    margin-top: 10px;
+}

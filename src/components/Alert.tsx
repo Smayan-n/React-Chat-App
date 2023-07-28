@@ -1,23 +1,26 @@
+import ReactDOM from "react-dom";
 import { AlertProps } from "../Utility/interfaces";
 import "../styles/Alert.css";
 
 function Alert(props: AlertProps) {
-	const { message, setError } = props;
+	const { message, onClose } = props;
 
-	function handleClose() {
-		// setIsShow(false);
-		setError("");
-	}
-
-	return (
+	return ReactDOM.createPortal(
 		<>
-			<div className={`alert error slide-down`}>
-				<span className="alert-close-btn" onClick={handleClose}>
+			<div className={`alert error slide-in`}>
+				{message}
+				<span
+					className="alert-close-btn"
+					onClick={(e) => {
+						e.stopPropagation();
+						onClose();
+					}}
+				>
 					&times;
 				</span>
-				{message}
 			</div>
-		</>
+		</>,
+		document.getElementById("alert") as HTMLDivElement
 	);
 }
 
