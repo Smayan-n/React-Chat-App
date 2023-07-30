@@ -20,11 +20,16 @@
     bottom: -47px;
   }
 
+  .tip-left{
+right: 0;
+  }
+
 .info-chat-btn,
 .edit-chat-btn,
 .logout-btn,
 .profile-icon,
-.create-chat-btn{
+.create-chat-btn,
+.msg-options{
     position: relative;
 }
 
@@ -32,6 +37,7 @@
 .edit-chat-btn:hover .tooltip,
 .logout-btn:hover .tooltip,
 .profile-icon:hover .tooltip,
-.create-chat-btn:hover .tooltip{
+.create-chat-btn:hover .tooltip,
+.msg-options:hover .tooltip{
     opacity: 0.95;
 }

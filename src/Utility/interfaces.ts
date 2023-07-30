@@ -18,6 +18,8 @@ interface FirestoreObject {
 	addGroupToDatabase: (groupMembers: AppUser[], groupName: string) => Promise<void>;
 	updateGroup: (groupId: string, groupMembers: AppUser[], groupName: string) => Promise<void>;
 	updateUserDatabaseProfile: (name: string, email?: string) => Promise<void>;
+	deleteGroup: (groupId: string) => void;
+	deleteMessage: (groupId: string, messageId: string) => void;
 
 	listenToMsgsFrom: (groupId: string) => Promise<void>;
 	findUsersWithName: (name: string) => Promise<AppUser[]>;
@@ -32,6 +34,8 @@ interface FirestoreProviderProps {
 
 interface AlertProps {
 	message: string;
+	type?: string;
+	autoClose?: boolean;
 	onClose: () => void;
 }
 
@@ -42,11 +46,12 @@ interface LoaderProps {
 interface ChatInterfaceProps {
 	group: AppGroup | null;
 	loading: boolean;
+	// chatInterfaceRef: React.RefObject<HTMLElement>;
 }
 
 interface MessageProps {
 	message: AppMessage;
-	leftorright: string;
+	group: AppGroup;
 }
 
 interface EditUserProps {
@@ -87,6 +92,7 @@ interface AppMessage {
 	messageContent: string;
 	sender: string; //user id
 	timeSent: Timestamp;
+	messageId: string;
 }
 
 interface AppGroup {

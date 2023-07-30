@@ -24,6 +24,7 @@
     position: relative;
     border-radius: 5px;
     box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+    border-left: 2px solid black
 }
 
 .chat-header {
@@ -34,7 +35,7 @@
     /* height: 60px; */
     padding: 10px;
     padding-left: 20px;
-    padding-right: 20px;
+    padding-right: 10px;
     /* border-bottom: 2px solid #ddd; */
     background: var(--color-background);
     color: white;
@@ -137,4 +138,10 @@
     clear: both;
   }
 
- 
+  .section-slider{
+    width: 6px;
+}
+
+.section-slider:hover{
+    cursor: w-resize;
+}

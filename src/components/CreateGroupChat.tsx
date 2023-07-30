@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
-import { getUsersFromIds } from "../Utility/databaseUtility";
+import { RiDeleteBin6Fill } from "react-icons/ri";
 import { AppUser, CreateGroupChatProps } from "../Utility/interfaces";
 import { getDateFromTimeStamp, getTimeFromTimestamp } from "../Utility/utilityFunctions";
 import { useFirestore } from "../contexts/FirestoreContext";
@@ -14,14 +14,14 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 
 	const [users, setUsers] = useState<AppUser[]>([]);
 	const [groupMembers, setGroupMembers] = useState<AppUser[]>([]);
-	const [loading, setLoading] = useState(false);
+	// const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
 	const { userCache } = useFirestore()!;
 
 	const groupNameRef = useRef<HTMLInputElement>(null);
 
-	const { addGroupToDatabase, updateGroup, findUsersWithName } = useFirestore()!;
+	const { addGroupToDatabase, updateGroup, findUsersWithName, deleteGroup } = useFirestore()!;
 
 	//load existing group members if any
 	useEffect(() => {
@@ -37,7 +37,7 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 	}
 
 	function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-		setLoading(true);
+		// setLoading(true);
 		findUsersWithName(e.target.value)
 			.then((usersFound: AppUser[]) => {
 				//Filter the usersFound array to include only users that are not in usersToAdd
@@ -45,7 +45,7 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 					(user: AppUser) => !groupMembers.some((existing: AppUser) => user.uid === existing.uid)
 				);
 
-				setLoading(false);
+				// setLoading(false);
 				setUsers(filteredUsers);
 			})
 			.catch((error) => {
@@ -78,6 +78,11 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 			setError("Add at least one user to the group");
 			return;
 		}
+		//make sure group is not left with one person
+		if (group && groupMembers.length <= 1) {
+			setError("Group cannot have only one person!");
+			return;
+		}
 
 		//create a new group or update depending on case
 		if (group) {
@@ -86,13 +91,13 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 		} else {
 			void addGroupToDatabase(groupMembers, groupName as string);
 		}
-		//close popup
+
 		onClose && onClose();
 	}
 
 	return (
 		<section className="create-chat-section">
-			{error && <Alert message={error} onClose={() => setError("")} />}
+			{error && <Alert autoClose message={error} onClose={() => setError("")} />}
 			<h2 className="create-title">
 				{group ? (info ? group.groupName : "Edit Group Chat") : "Create a new group chat!"}
 			</h2>
@@ -100,12 +105,15 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 			{info && (
 				<div>
 					<div>
-						<h4>group created on: </h4> {getDateFromTimeStamp(group!.createdAt, true)},{" "}
-						{getTimeFromTimestamp(group!.createdAt, true)}
+						<h4>group created on: </h4>
+						<div className="group-info-data">
+							{getDateFromTimeStamp(group!.createdAt, true)},{" "}
+							{getTimeFromTimestamp(group!.createdAt, true)}
+						</div>
 					</div>
 					<div className="group-creator">
 						<h4>group creator: </h4>
-						{getGroupCreatorName(group!.createdBy)}
+						<div className="group-info-data">{getGroupCreatorName(group!.createdBy)}</div>
 					</div>
 
 					{groupMembers.length === 0 ? <div>No users to show</div> : <div>Group members: </div>}
@@ -176,6 +184,11 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 					<button className="create-group-btn" type="submit">
 						{group ? "Edit Group" : "Create Group"}
 					</button>
+					{group && (
+						<button onClick={() => deleteGroup(group.groupId)} className="delete-group-btn">
+							Delete Group
+						</button>
+					)}
 				</form>
 			)}
 		</section>

@@ -2,6 +2,7 @@ import { Unsubscribe } from "firebase/auth";
 import {
 	addDoc,
 	collection,
+	deleteDoc,
 	doc,
 	getDocs,
 	onSnapshot,
@@ -58,6 +59,11 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 
 	//NOTE:: handle and fix function without proper promise handling
 
+	function deleteGroup(groupId: string) {
+		const ref = doc(firestoreDB, `chatGroups/${groupId}`);
+		void deleteDoc(ref);
+	}
+
 	async function addGroupToDatabase(groupMembers: AppUser[], groupName: string) {
 		//make a new chat group with user1 and user2 as members
 		const ref = collection(firestoreDB, "chatGroups");
@@ -84,11 +90,20 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 
 	async function addMessageToDatabase(groupId: string, message: string, uid: string) {
 		const ref = collection(firestoreDB, `chatGroups/${groupId}/messages`);
-		await addDoc(ref, {
+		const messageRef = await addDoc(ref, {
 			messageContent: message,
 			sender: uid,
 			timeSent: serverTimestamp(),
 		});
+		//add messageId
+		await updateDoc(messageRef, {
+			messageId: messageRef.id,
+		});
+	}
+
+	function deleteMessage(groupId: string, messageId: string) {
+		const ref = doc(firestoreDB, `chatGroups/${groupId}/messages/${messageId}`);
+		void deleteDoc(ref);
 	}
 
 	//NOTE: use caching - look at firebase docs
@@ -200,6 +215,8 @@ function FirestoreProvider(props: FirestoreProviderProps) {
 		addMessageToDatabase,
 		listenToMsgsFrom,
 		updateUserDatabaseProfile,
+		deleteGroup,
+		deleteMessage,
 		userCache,
 		chatGroups,
 		messages,

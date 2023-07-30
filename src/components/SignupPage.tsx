@@ -70,7 +70,7 @@ function SignupPage() {
 
 	return (
 		<>
-			{error && <Alert onClose={() => setError("")} message={error} />}
+			{error && <Alert autoClose onClose={() => setError("")} message={error} />}
 			<div className="background">
 				<div className="shape"></div>
 				<div className="shape"></div>

@@ -1,6 +1,7 @@
 import "../styles/Loader.css";
 import { LoaderProps } from "../Utility/interfaces";
 
+//for loader to fit inside parent element, parent element should have css property position set to: relative;
 function Loader(props: LoaderProps) {
 	const { message } = props;
 

@@ -30,12 +30,13 @@ function Dashboard() {
 			if (userLoadingRef.current) {
 				navigate("/login");
 			}
-		}, 500);
+		}, 800);
 	}, [currentUser, navigate]);
 
 	//a makeshift way to prevent the group chats and messages from overflowing off the page
 	const mainChatsSectionRef = useRef<HTMLDivElement>(null);
 	useEffect(() => {
+		//resize main section based on screen size
 		function onResize() {
 			if (mainChatsSectionRef.current) {
 				mainChatsSectionRef.current.style.maxHeight = (window.innerHeight - 77).toString() + "px";
@@ -49,7 +50,13 @@ function Dashboard() {
 	}, []);
 
 	useEffect(() => {
-		//when group is edited, set current group to updated one from database - so it is properly rendered in chatInterface
+		//set currentGroup if current user was removed from group
+		if (currentGroup && chatGroups) {
+			if (!chatGroups.includes(currentGroup)) {
+				setCurrentGroup(null);
+			}
+		}
+		// when group is edited, set current group to updated one from database - so it is properly rendered in chatInterface
 		if (currentGroup) {
 			chatGroups.forEach((group: AppGroup) => {
 				if (group.groupId === currentGroup.groupId) {
@@ -64,7 +71,7 @@ function Dashboard() {
 	}, [chatGroups, currentGroup, currentUser]);
 
 	function handleGroupSet(groupOn: AppGroup) {
-		//make sure group is different to prevent unnecessary re renders
+		//make sure group is different to prevent unnecessary re-renders
 		if (groupOn.groupId === currentGroup?.groupId) {
 			return;
 		}
@@ -89,7 +96,12 @@ function Dashboard() {
 				<NavBar />
 
 				<div ref={mainChatsSectionRef} className="main-chats-section">
-					<ChatGroups currentGroup={currentGroup} groups={chatGroups} onGroupSet={handleGroupSet} />
+					<ChatGroups
+						// groupSectionRef={groupSectionRef}
+						currentGroup={currentGroup}
+						groups={chatGroups}
+						onGroupSet={handleGroupSet}
+					/>
 					<ChatInterface loading={loading} group={currentGroup} />
 				</div>
 			</section>

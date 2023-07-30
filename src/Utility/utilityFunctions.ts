@@ -1,5 +1,4 @@
 import { Timestamp } from "firebase/firestore";
-import { AppMessage } from "./interfaces";
 
 function replaceAll(str: string, find: string, replace: string) {
 	//"g" flag finds all occurrence and replace them
@@ -27,4 +26,22 @@ function getDateFromTimeStamp(timestamp: Timestamp, fullDate?: boolean) {
 	}
 	return timestamp.toDate().toLocaleDateString();
 }
-export { getDateFromTimeStamp, getTimeFromTimestamp, replaceAll };
+
+function getTodaysDate() {
+	const date = new Date();
+	const year = date.getFullYear().toString();
+	const month = (1 + date.getMonth()).toString().padStart(2, "0");
+	const day = date.getDate().toString().padStart(2, "0");
+
+	return month + "/" + day + "/" + year;
+}
+
+function datesEqual(date1: Date, date2: Date) {
+	return (
+		date1.getDate() === date2.getDate() &&
+		date1.getFullYear() === date2.getFullYear() &&
+		date1.getDay() === date1.getDay()
+	);
+}
+
+export { datesEqual, getDateFromTimeStamp, getTimeFromTimestamp, getTodaysDate, replaceAll };

@@ -49,7 +49,7 @@ function EditUser({ onClose }: EditUserProps) {
 
 	return (
 		<section className="edit-user-section">
-			{error && <Alert message={error} onClose={() => setError("")} />}
+			{error && <Alert autoClose message={error} onClose={() => setError("")} />}
 			<h3 className="edit-user-title">{currentUser!.displayName}'s profile</h3>
 			<form onSubmit={handleSubmit} className="edit-user-form">
 				{loading && <Loader message="Updating Profile" />}
