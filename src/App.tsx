@@ -5,6 +5,7 @@ import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import { FirestoreProvider } from "./contexts/FirestoreContext";
+import { RealtimeProvider } from "./contexts/RealtimeContext";
 import "./styles/App.css";
 
 //init firebase app
@@ -16,12 +17,14 @@ function App() {
 			<section className="main-app-section">
 				<AuthProvider>
 					<FirestoreProvider>
-						<Routes>
-							<Route path="/login" element={<LoginPage />}></Route>
-							<Route path="/signup" element={<SignupPage />}></Route>
-							<Route path="/dashboard" element={<Dashboard />}></Route>
-							<Route path="*" element={<LoginPage />}></Route>
-						</Routes>
+						<RealtimeProvider>
+							<Routes>
+								<Route path="/login" element={<LoginPage />}></Route>
+								<Route path="/signup" element={<SignupPage />}></Route>
+								<Route path="/dashboard" element={<Dashboard />}></Route>
+								<Route path="*" element={<LoginPage />}></Route>
+							</Routes>
+						</RealtimeProvider>
 					</FirestoreProvider>
 				</AuthProvider>
 			</section>

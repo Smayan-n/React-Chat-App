@@ -4,6 +4,7 @@ import { AppMessage, ChatInterfaceProps } from "../Utility/interfaces";
 import { getTimeFromTimestamp } from "../Utility/utilityFunctions";
 import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
+import { useRealtime } from "../contexts/RealtimeContext";
 import "../styles/ChatInterface.css";
 import CreateGroupChat from "./CreateGroupChat";
 import Loader from "./Loader";
@@ -14,12 +15,14 @@ import Tooltip from "./Tooltip";
 function ChatInterface(props: ChatInterfaceProps) {
 	const { group, loading } = props;
 	const { currentUser } = useAuth()!;
-	const { addMessageToDatabase, messages } = useFirestore()!;
+	const { addMessageToDatabase, messages, userCache } = useFirestore()!;
+	const { setUserTyping, groupUsersTyping } = useRealtime()!;
 
 	const msgInputRef = useRef<HTMLInputElement>(null);
 
 	const [popupOpen, setPopupOpen] = useState(false);
 	const [popup2Open, setPopup2Open] = useState(false);
+	const [msgSendLoading, setMsgSendLoading] = useState(false);
 
 	const dummyRef = useRef<HTMLDivElement>(null);
 
@@ -77,7 +80,9 @@ function ChatInterface(props: ChatInterfaceProps) {
 	}, [messages]);
 
 	async function handleSendMessage(message: string) {
+		setMsgSendLoading(true);
 		await addMessageToDatabase(group!.groupId, message, currentUser!.uid);
+		setMsgSendLoading(false);
 	}
 
 	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -92,9 +97,22 @@ function ChatInterface(props: ChatInterfaceProps) {
 			//make sure message is not empty
 			msgInputRef.current.value.trim() && void handleSendMessage(msgInputRef.current?.value);
 
-			//clear input
+			//clear input and set user typing to false
 			msgInputRef.current.value = "";
+			group && currentUser && setUserTyping(group.groupId, currentUser?.uid, false);
 		}
+	}
+
+	function getUsersTyping() {
+		const usersTyping: string[] = [];
+		groupUsersTyping.forEach((value, key) => {
+			if (value) {
+				//don't include current user as typing
+				const user = userCache.get(key);
+				if (user?.uid !== currentUser?.uid && user) usersTyping.push(user.username);
+			}
+		});
+		return usersTyping.join(" and ");
 	}
 
 	//don't render interface if no chats open
@@ -111,7 +129,7 @@ function ChatInterface(props: ChatInterfaceProps) {
 		<>
 			<div ref={sliderSectionRef} className="section-slider"></div>
 			<section ref={chatInterfaceRef} className="chat-interface-section">
-				{loading && <Loader message="Loading Messages" />}
+				{/* {msgSendLoading && <Loader message="Sending..." />} */}
 
 				<header className="chat-header">
 					<div className="chat-header-info">
@@ -137,21 +155,50 @@ function ChatInterface(props: ChatInterfaceProps) {
 					</div>
 				</header>
 
-				<div className="main-chat-area">
-					{messages.length === 0 && <section className="no-messages">No messages</section>}
+				<div className="main-chat-area-outer">
+					<div className="main-chat-area">
+						{messages.length === 0 && <section className="no-messages">No messages</section>}
 
-					{messages.length > 0 &&
-						messages.map((msg: AppMessage) => {
-							return (
-								<Message key={getTimeFromTimestamp(msg.timeSent, true)} message={msg} group={group} />
-							);
-						})}
+						{messages.length > 0 &&
+							messages.map((msg: AppMessage) => {
+								return (
+									<Message
+										key={getTimeFromTimestamp(msg.timeSent, true)}
+										message={msg}
+										group={group}
+									/>
+								);
+							})}
 
-					<div className="dummy-div" ref={dummyRef}></div>
+						{/* <div className="msg-date-div">Hello</div> */}
+						<div className="dummy-div" ref={dummyRef}></div>
+					</div>
+					{loading && <Loader message="Loading Messages" />}
+
+					{/*show which users are typing */}
+					{getUsersTyping() === "" ? null : (
+						<div className="typing-div">{`${getUsersTyping()} is typing...`}</div>
+					)}
 				</div>
 
 				<form onSubmit={handleSubmit} className="chat-input-form">
-					<input ref={msgInputRef} type="text" className="msg-input" placeholder="Type a message..." />
+					{messages && ""}
+					<input
+						onChange={(e) => {
+							if (currentUser && group) {
+								if (e.target.value.trim() === "") {
+									setUserTyping(group.groupId, currentUser?.uid, false);
+								} else {
+									setUserTyping(group.groupId, currentUser?.uid, true);
+								}
+							}
+						}}
+						defaultValue={""}
+						ref={msgInputRef}
+						type="text"
+						className="msg-input"
+						placeholder="Type a message..."
+					/>
 					<button type="submit" className="send-msg-btn">
 						Send
 					</button>

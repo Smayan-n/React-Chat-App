@@ -15,7 +15,7 @@ import {
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { getAppUser } from "../Utility/databaseUtility";
 import { firestoreDB } from "../Utility/firebase";
-import { AppGroup, AppMessage, AppUser, FirestoreObject, FirestoreProviderProps } from "../Utility/interfaces";
+import { AppGroup, AppMessage, AppUser, FirestoreObject, ProviderProps } from "../Utility/interfaces";
 import { useAuth } from "./AuthContext";
 
 const FirestoreContext = React.createContext<FirestoreObject | null>(null);
@@ -24,7 +24,7 @@ function useFirestore() {
 	return useContext(FirestoreContext);
 }
 
-function FirestoreProvider(props: FirestoreProviderProps) {
+function FirestoreProvider(props: ProviderProps) {
 	const { children } = props;
 	const { currentUser } = useAuth()!;
 

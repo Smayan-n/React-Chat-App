@@ -24,11 +24,14 @@ interface FirestoreObject {
 	listenToMsgsFrom: (groupId: string) => Promise<void>;
 	findUsersWithName: (name: string) => Promise<AppUser[]>;
 }
-//Props
-interface AuthProviderProps {
-	children: React.ReactNode;
+
+interface RealtimeObject {
+	setUserTyping: (groupId: string, userId: string, isTyping?: boolean) => void;
+	listenToTypingFrom: (groupId: string) => void;
+	groupUsersTyping: Map<string, boolean>;
 }
-interface FirestoreProviderProps {
+//Props
+interface ProviderProps {
 	children: React.ReactNode;
 }
 
@@ -109,15 +112,15 @@ export type {
 	AppMessage,
 	AppUser,
 	AuthObject,
-	AuthProviderProps,
 	ChatGroupsProps,
 	ChatInterfaceProps,
 	CreateGroupChatProps,
 	EditUserProps,
 	FirestoreObject,
-	FirestoreProviderProps,
 	LoaderProps,
 	MessageProps,
 	PopupProps,
+	ProviderProps,
+	RealtimeObject,
 	TooltipProps,
 };

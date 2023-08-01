@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AppGroup } from "../Utility/interfaces";
 import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
+import { useRealtime } from "../contexts/RealtimeContext";
 import "../styles/Dashboard.css";
 import ChatGroups from "./ChatGroups";
 import ChatInterface from "./ChatInterface";
@@ -11,6 +12,8 @@ import NavBar from "./NavBar";
 function Dashboard() {
 	const { currentUser } = useAuth()!;
 	const { chatGroups, listenToMsgsFrom } = useFirestore()!;
+	const { listenToTypingFrom, setUserTyping } = useRealtime()!;
+
 	const [loading, setLoading] = useState(false);
 
 	const [currentGroup, setCurrentGroup] = useState<AppGroup | null>(null);
@@ -76,6 +79,9 @@ function Dashboard() {
 			return;
 		}
 
+		//set user typing for previous group to false
+		currentGroup && currentUser && setUserTyping(currentGroup.groupId, currentUser.uid, false);
+
 		setLoading(true);
 		setCurrentGroup(groupOn);
 		listenToMsgsFrom(groupOn.groupId)
@@ -87,6 +93,7 @@ function Dashboard() {
 			.catch((error) => {
 				console.log(error);
 			});
+		void listenToTypingFrom(groupOn.groupId);
 	}
 
 	return (

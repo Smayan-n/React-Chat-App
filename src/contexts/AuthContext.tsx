@@ -11,7 +11,7 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addUserToDatabase } from "../Utility/databaseUtility";
-import { AuthObject, AuthProviderProps } from "../Utility/interfaces";
+import { AuthObject, ProviderProps } from "../Utility/interfaces";
 
 const AuthContext = React.createContext<AuthObject | null>(null);
 
@@ -19,7 +19,7 @@ function useAuth() {
 	return useContext(AuthContext);
 }
 
-function AuthProvider(props: AuthProviderProps) {
+function AuthProvider(props: ProviderProps) {
 	const { children } = props;
 	const [currentUser, setCurrentUser] = useState<User | null>(null);
 

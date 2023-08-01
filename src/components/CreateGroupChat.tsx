@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
-import { RiDeleteBin6Fill } from "react-icons/ri";
 import { AppUser, CreateGroupChatProps } from "../Utility/interfaces";
 import { getDateFromTimeStamp, getTimeFromTimestamp } from "../Utility/utilityFunctions";
 import { useFirestore } from "../contexts/FirestoreContext";

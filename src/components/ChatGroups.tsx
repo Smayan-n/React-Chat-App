@@ -3,6 +3,7 @@ import { IoIosCreate } from "react-icons/io";
 import { getLatestMessagesFrom } from "../Utility/databaseUtility";
 import { AppGroup, AppMessage, ChatGroupsProps } from "../Utility/interfaces";
 import { getDateFromTimeStamp } from "../Utility/utilityFunctions";
+import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/ChatGroups.css";
 import CreateGroupChat from "./CreateGroupChat";
