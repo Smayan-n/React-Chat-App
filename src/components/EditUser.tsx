@@ -1,5 +1,7 @@
+import { Timestamp } from "firebase/firestore";
 import { useRef, useState } from "react";
 import { EditUserProps } from "../Utility/interfaces";
+import { getDateFromTimeStamp } from "../Utility/utilityFunctions";
 import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/EditUser.css";
@@ -8,7 +10,7 @@ import Loader from "./Loader";
 
 function EditUser({ onClose }: EditUserProps) {
 	const { currentUser, updateUserProfile } = useAuth()!;
-	const { updateUserDatabaseProfile } = useFirestore()!;
+	const { updateUserDatabaseProfile, userCache } = useFirestore()!;
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
@@ -50,7 +52,7 @@ function EditUser({ onClose }: EditUserProps) {
 	return (
 		<section className="edit-user-section">
 			{error && <Alert autoClose message={error} onClose={() => setError("")} />}
-			<h3 className="edit-user-title">{currentUser!.displayName}'s profile</h3>
+			<h2 className="edit-user-title">{currentUser?.displayName || "---"}'s profile</h2>
 			<form onSubmit={handleSubmit} className="edit-user-form">
 				{loading && <Loader message="Updating Profile" />}
 				<div>

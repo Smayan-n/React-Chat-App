@@ -4,6 +4,9 @@
     color: black;
     margin-bottom: 18px;
     align-items: center;
+
+}
+.msg-content{
     font-size: 19px;
     font-weight: 500;
 }
@@ -97,4 +100,14 @@
 }
 .delete-msg-btn:hover{
     opacity: 0.8;
+}
+
+.edit-msg-input{
+    outline: none;
+    border: none;
+    background-color: var(--color-primary);
+    color: black;
+    font-size: 19px;
+    font-weight: 500;
+
 }

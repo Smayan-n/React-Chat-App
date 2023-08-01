@@ -65,7 +65,7 @@ function ChatGroups(props: ChatGroupsProps) {
 		if (latestMessages) {
 			const message: AppMessage | undefined = latestMessages.get(groupId);
 			if (message) {
-				return (userCache.get(message.sender)?.username as string) + ": " + message.messageContent;
+				return ((userCache.get(message.sender)?.username as string) || "___") + ": " + message.messageContent;
 			}
 		}
 		return "No messages yet";

@@ -82,6 +82,10 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 			setError("Group cannot have only one person!");
 			return;
 		}
+		if (groupName!.length >= 35) {
+			setError("Group name cannot exceed 35 characters");
+			return;
+		}
 
 		//create a new group or update depending on case
 		if (group) {

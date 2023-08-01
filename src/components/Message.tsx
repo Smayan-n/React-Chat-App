@@ -40,6 +40,7 @@ function Message(props: MessageProps) {
 							<div className="msg-sender">{userCache.get(message.sender)?.username || ""}</div>
 							<div className="msg-info-right">
 								<div className="msg-time">{getTimeFromTimestamp(message.timeSent, false)}</div>
+
 								<div onClick={() => setPopupOpen(true)} className="msg-options">
 									<SlOptionsVertical size="14px" />
 									<Tooltip
@@ -65,7 +66,8 @@ function Message(props: MessageProps) {
 												<h4>Message Sent At: </h4>
 												<div className="msg-info-data">
 													{`${getDateFromTimeStamp(message.timeSent)}, ${getTimeFromTimestamp(
-														message.timeSent
+														message.timeSent,
+														true
 													)}` || ""}
 												</div>
 											</div>
@@ -83,6 +85,7 @@ function Message(props: MessageProps) {
 					)}
 
 					<div className="msg-content">{message.messageContent}</div>
+					{/* <input className="edit-msg-input" type="text"></input> */}
 				</div>
 			</section>
 		</>

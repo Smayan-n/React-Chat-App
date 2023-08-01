@@ -9,18 +9,20 @@ function Popup(props: PopupProps) {
 	return ReactDOM.createPortal(
 		<>
 			<section className="popup-overlay"></section>
-			<section className="popup-section">
-				<div
-					onClick={(e) => {
-						//cause click event was propagating up to the og div
-						e.stopPropagation();
-						onClose();
-					}}
-					className="close-popup"
-				>
-					&times;
-				</div>
-				{children}
+			<section className="popup-outer">
+				<section className="popup-section">
+					<div
+						onClick={(e) => {
+							//cause click event was propagating up to the og div
+							e.stopPropagation();
+							onClose();
+						}}
+						className="close-popup"
+					>
+						&times;
+					</div>
+					{children}
+				</section>
 			</section>
 		</>,
 		document.getElementById("popup") as HTMLElement

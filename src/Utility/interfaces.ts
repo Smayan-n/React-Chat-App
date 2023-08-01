@@ -88,7 +88,6 @@ interface AppUser {
 	username: string;
 	email: string;
 	uid: string;
-	groups: string[];
 }
 
 interface AppMessage {

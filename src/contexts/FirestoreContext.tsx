@@ -30,8 +30,9 @@ function FirestoreProvider(props: ProviderProps) {
 
 	const [chatGroups, setChatGroups] = useState<AppGroup[]>([]);
 	const [messages, setMessages] = useState<AppMessage[]>([]);
-	//uid: User
+	//uid: AppUser
 	const [userCache, setUserCache] = useState<Map<string, AppUser>>(new Map());
+
 	const unsubRef = useRef<Unsubscribe>();
 
 	async function findUsersWithName(searchTerm: string): Promise<AppUser[]> {
@@ -158,17 +159,21 @@ function FirestoreProvider(props: ProviderProps) {
 	useEffect(() => {
 		async function updateUserCache() {
 			if (chatGroups.length !== 0) {
+				const map = new Map<string, AppUser>();
 				//all members of all user groups
 				for (const group of chatGroups) {
 					for (const memberId of group.members) {
-						if (!userCache.has(memberId)) {
+						//if cache does not already have user
+						if (!map.has(memberId)) {
 							const user = await getAppUser(memberId);
 							if (user) {
-								userCache.set(memberId, user);
+								map.set(memberId, user);
 							}
 						}
 					}
 				}
+				//set state so dependent components reload
+				setUserCache(map);
 			}
 		}
 		void updateUserCache();
