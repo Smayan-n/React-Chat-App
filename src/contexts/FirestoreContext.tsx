@@ -159,13 +159,14 @@ function FirestoreProvider(props: ProviderProps) {
 	useEffect(() => {
 		async function updateUserCache() {
 			if (chatGroups.length !== 0) {
-				const map = new Map<string, AppUser>();
+				const map = userCache;
 				//all members of all user groups
 				for (const group of chatGroups) {
 					for (const memberId of group.members) {
 						//if cache does not already have user
 						if (!map.has(memberId)) {
 							const user = await getAppUser(memberId);
+							console.log("read user");
 							if (user) {
 								map.set(memberId, user);
 							}
