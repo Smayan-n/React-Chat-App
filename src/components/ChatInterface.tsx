@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AiFillEdit, AiFillInfoCircle } from "react-icons/ai";
+import { AiFillEdit, AiFillInfoCircle, AiOutlineArrowDown } from "react-icons/ai";
 import { AppMessage, ChatInterfaceProps } from "../Utility/interfaces";
 import { getTimeFromTimestamp } from "../Utility/utilityFunctions";
 import { useAuth } from "../contexts/AuthContext";
@@ -26,11 +26,15 @@ function ChatInterface(props: ChatInterfaceProps) {
 
 	const dummyRef = useRef<HTMLDivElement>(null);
 
+	const mainChatAreaRef = useRef<HTMLDivElement>(null);
+	const [atChatBottom, setAtChatBottom] = useState(true);
+	const [newMessages, setNewMessages] = useState(0);
+	const numMessagesRef = useRef(messages.length);
+
 	//section resizing logic - user can freely change chats section and group section size
 	const sliderSectionRef = useRef<HTMLDivElement>(null);
 	const chatInterfaceRef = useRef<HTMLElement>(null);
 	let sliderSectionClicked = false;
-
 	useEffect(() => {
 		function onSectionResize(e: MouseEvent) {
 			if (sliderSectionClicked) {
@@ -68,16 +72,55 @@ function ChatInterface(props: ChatInterfaceProps) {
 		};
 	}, [group]);
 
+	function scrollToBottom() {
+		dummyRef.current?.scrollIntoView({ behavior: "smooth" });
+	}
+
 	useEffect(() => {
-		//scroll after some time because messages take time to be rendered after sending
+		const chatElement = mainChatAreaRef.current;
 
-		setTimeout(() => {
-			// setUserRecentSentMsg(null);
-			dummyRef.current && dummyRef.current.scrollIntoView({ behavior: "smooth" });
-		}, 250);
+		function handleScroll() {
+			if (chatElement) {
+				if (chatElement.scrollHeight - chatElement.scrollTop - chatElement.clientHeight <= 50) {
+					setAtChatBottom(true);
+					setNewMessages(0);
+				} else {
+					setAtChatBottom(false);
+				}
+			}
+		}
 
-		// console.log(messagesToDisp);
-	}, [messages]);
+		if (chatElement) {
+			chatElement.addEventListener("scroll", handleScroll);
+		}
+
+		//cleanup - remove listeners
+		return () => {
+			chatElement && chatElement.removeEventListener("scroll", handleScroll);
+		};
+
+		//dependency is group because effect is not called when a ref changes
+	}, [group]);
+
+	useEffect(() => {
+		//run only once
+		if (numMessagesRef.current !== messages.length) {
+			numMessagesRef.current = messages.length;
+			//scroll after timeout because messages take time to be rendered after sending
+			setTimeout(() => {
+				// setUserRecentSentMsg(null);
+				const chatElement = mainChatAreaRef.current;
+				if (chatElement) {
+					if (atChatBottom) {
+						scrollToBottom();
+						setNewMessages(0);
+					} else {
+						setNewMessages(newMessages + 1);
+					}
+				}
+			}, 10);
+		}
+	}, [messages, atChatBottom, newMessages]);
 
 	async function handleSendMessage(message: string) {
 		setMsgSendLoading(true);
@@ -88,18 +131,17 @@ function ChatInterface(props: ChatInterfaceProps) {
 	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		if (msgInputRef.current) {
-			// setUserRecentSentMsg({
-			// 	messageContent: msgInputRef.current?.value,
-			// 	sender: currentUser!.uid,
-			// 	timeSent: Timestamp.fromDate(new Date()),
-			// });
-
 			//make sure message is not empty
-			msgInputRef.current.value.trim() && void handleSendMessage(msgInputRef.current?.value);
+			const msg = msgInputRef.current.value;
+			if (msg) {
+				void handleSendMessage(msgInputRef.current?.value);
+				//when user sends message, make sure it auto scrolls
+				setAtChatBottom(true);
 
-			//clear input and set user typing to false
-			msgInputRef.current.value = "";
-			group && currentUser && setUserTyping(group.groupId, currentUser?.uid, false);
+				//clear input and set user typing to false
+				msgInputRef.current.value = "";
+				group && currentUser && setUserTyping(group.groupId, currentUser?.uid, false);
+			}
 		}
 	}
 
@@ -145,7 +187,7 @@ function ChatInterface(props: ChatInterfaceProps) {
 								<CreateGroupChat info group={group} />
 							</Popup>
 						</div>
-						<div onClick={() => setPopupOpen(true)} className="edit-chat-btn">
+						<div role="button" onClick={() => setPopupOpen(true)} className="edit-chat-btn">
 							<AiFillEdit size="23px" />
 							<Tooltip position="tip-bottom">Edit Chat</Tooltip>
 							<Popup isOpen={popupOpen} onClose={() => setPopupOpen(false)}>
@@ -156,7 +198,7 @@ function ChatInterface(props: ChatInterfaceProps) {
 				</header>
 
 				<div className="main-chat-area-outer">
-					<div className="main-chat-area">
+					<div ref={mainChatAreaRef} className="main-chat-area">
 						{messages.length === 0 && <section className="no-messages">No messages</section>}
 
 						{messages.length > 0 &&
@@ -178,6 +220,14 @@ function ChatInterface(props: ChatInterfaceProps) {
 					{/*show which users are typing */}
 					{getUsersTyping() === "" ? null : (
 						<div className="typing-div">{`${getUsersTyping()} is typing...`}</div>
+					)}
+
+					{!atChatBottom && (
+						<div onClick={scrollToBottom} className="scroll-down-btn">
+							<AiOutlineArrowDown size="32px" />
+							<Tooltip>To Bottom</Tooltip>
+							{(newMessages && `${newMessages} new message(s)`) || ""}
+						</div>
 					)}
 				</div>
 

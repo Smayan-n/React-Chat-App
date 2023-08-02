@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
 .msg{
     display: flex;
@@ -152,7 +153,7 @@
     background-color: var(--color-primary);
     color: black;
     font-size: 19px;
-    font-weight: 500;
+    font-weight: 400;
     border-bottom: 2px solid black;
     /* min-height: 200px; */
     min-width: 350px;
@@ -161,6 +162,7 @@
     line-height: 1.2;
     border-radius: 3px;
     padding: 5px;
+    font-family: poppins;
 
 
 }

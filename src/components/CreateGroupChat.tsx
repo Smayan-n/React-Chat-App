@@ -188,7 +188,7 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 						{group ? "Edit Group" : "Create Group"}
 					</button>
 					{group && (
-						<button onClick={() => deleteGroup(group.groupId)} className="delete-group-btn">
+						<button type="button" onClick={() => deleteGroup(group.groupId)} className="delete-group-btn">
 							Delete Group
 						</button>
 					)}

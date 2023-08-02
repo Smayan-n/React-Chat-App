@@ -42,7 +42,6 @@ function Message(props: MessageProps) {
 	function handleEditSubmit() {
 		if (editMsgRef.current) {
 			const newMessage = editMsgRef.current.value;
-			message.messageContent = newMessage;
 			setEditMsg(false);
 			updateMessage(group.groupId, message.messageId, newMessage);
 		}

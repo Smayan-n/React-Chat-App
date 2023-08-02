@@ -64,7 +64,9 @@
 }
 .info-chat-btn:hover, .edit-chat-btn:hover{
     background-color: #4d4d4d;
+
 }
+
 
 .chat-input-form{
     /* height: 70px; */
@@ -118,6 +120,7 @@
     position: relative
 }
 .main-chat-area{
+    box-sizing: border-box;
     height: 100%;
     position: relative;
     overflow-y: auto;
@@ -127,7 +130,7 @@
 }
 
 .main-chat-area::-webkit-scrollbar{
-    width: 10px;
+    width: 14px;
     height: 10px;
 }
 .main-chat-area::-webkit-scrollbar-track {
@@ -186,3 +189,21 @@
     }
   }
 
+.scroll-down-btn{
+    background-color: #2f2e2e;
+    position: absolute;
+    padding: 5px;
+    bottom: 30px;
+    right:0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin-right: 25px;
+    cursor: pointer;
+
+}
+
+.scroll-down-btn:hover{
+    background-color: #434343;
+}

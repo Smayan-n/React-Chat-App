@@ -13,7 +13,7 @@
 	transition: opacity 0.2s;
 	pointer-events: none;
 	white-space: nowrap;
-    z-index:1000;
+    z-index:10000;
   }
 
   .tip-bottom{
@@ -29,7 +29,8 @@ right: 0;
 .logout-btn,
 .profile-icon,
 .create-chat-btn,
-.msg-options{
+.msg-options,
+.scroll-down-btn{
     position: relative;
 }
 
@@ -38,6 +39,7 @@ right: 0;
 .logout-btn:hover .tooltip,
 .profile-icon:hover .tooltip,
 .create-chat-btn:hover .tooltip,
-.msg-options:hover .tooltip{
+.msg-options:hover .tooltip,
+.scroll-down-btn:hover .tooltip{
     opacity: 0.95;
 }

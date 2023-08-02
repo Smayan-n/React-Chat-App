@@ -31,24 +31,6 @@ function ChatGroups(props: ChatGroupsProps) {
 		void setMsgs();
 	}, [groups]);
 
-	//to show date the messages were sent
-	// useEffect(() => {
-	// 	if (currentGroup && latestMessages) {
-	// 		const currentLatestMessage = latestMessages.get(currentGroup.groupId);
-	// 		if (currentLatestMessage) {
-	// 			const latestDateSent = currentLatestMessage?.timeSent;
-	// 			//if latest date sent does not equal todays date, send a message as server that displays in the center that shows date sent
-	// 			console.log(datesEqual(latestDateSent.toDate(), new Date()));
-	// 			if (!datesEqual(latestDateSent.toDate(), new Date())) {
-	// 				void addMessageToDatabase(
-	// 					currentGroup.groupId,
-	// 					`${getDateFromTimeStamp(latestDateSent)}`,
-	// 					"server"
-	// 				);
-	// 			}
-	// 		}
-	// 	}
-	// }, [latestMessages, currentGroup]);
 	function getLatestMessageTime(group: AppGroup) {
 		if (latestMessages) {
 			const message: AppMessage | undefined = latestMessages.get(group.groupId);
@@ -58,10 +40,6 @@ function ChatGroups(props: ChatGroupsProps) {
 		}
 		return "";
 	}
-
-	useEffect(() => {
-		console.log("cache changed");
-	}, [userCache]);
 
 	function getLatestMessage(group: AppGroup) {
 		//return group usernames
