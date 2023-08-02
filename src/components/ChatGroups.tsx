@@ -3,7 +3,6 @@ import { IoIosCreate } from "react-icons/io";
 import { getLatestMessagesFrom } from "../Utility/databaseUtility";
 import { AppGroup, AppMessage, ChatGroupsProps } from "../Utility/interfaces";
 import { getDateFromTimeStamp } from "../Utility/utilityFunctions";
-import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/ChatGroups.css";
 import CreateGroupChat from "./CreateGroupChat";
@@ -50,10 +49,9 @@ function ChatGroups(props: ChatGroupsProps) {
 	// 		}
 	// 	}
 	// }, [latestMessages, currentGroup]);
-
-	function getLatestMessageTime(groupId: string) {
+	function getLatestMessageTime(group: AppGroup) {
 		if (latestMessages) {
-			const message: AppMessage | undefined = latestMessages.get(groupId);
+			const message: AppMessage | undefined = latestMessages.get(group.groupId);
 			if (message) {
 				return getDateFromTimeStamp(message.timeSent);
 			}
@@ -61,9 +59,19 @@ function ChatGroups(props: ChatGroupsProps) {
 		return "";
 	}
 
-	function getLatestMessage(groupId: string) {
+	useEffect(() => {
+		console.log("cache changed");
+	}, [userCache]);
+
+	function getLatestMessage(group: AppGroup) {
+		//return group usernames
+		// const members: string[] = [];
+		// group.members.forEach((member) => {
+		// 	members.push(userCache.get(member)?.username as string);
+		// });
+		// return members.join(", ");
 		if (latestMessages) {
-			const message: AppMessage | undefined = latestMessages.get(groupId);
+			const message: AppMessage | undefined = latestMessages.get(group.groupId);
 			if (message) {
 				return ((userCache.get(message.sender)?.username as string) || "___") + ": " + message.messageContent;
 			}
@@ -110,9 +118,9 @@ function ChatGroups(props: ChatGroupsProps) {
 								>
 									<div className="group-info-section">
 										<h4 className="group-title">{group.groupName}</h4>
-										<div className="last-msg-time">{getLatestMessageTime(group.groupId)}</div>
+										<div className="last-msg-time">{getLatestMessageTime(group)}</div>
 									</div>
-									<div className="latest-msg">{getLatestMessage(group.groupId)}</div>
+									<div className="latest-msg">{getLatestMessage(group)}</div>
 								</section>
 							);
 						})}

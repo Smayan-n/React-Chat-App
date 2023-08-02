@@ -95,6 +95,7 @@ function FirestoreProvider(props: ProviderProps) {
 			messageContent: message,
 			sender: uid,
 			timeSent: serverTimestamp(),
+			edited: false,
 		});
 		//add messageId
 		await updateDoc(messageRef, {
@@ -105,6 +106,15 @@ function FirestoreProvider(props: ProviderProps) {
 	function deleteMessage(groupId: string, messageId: string) {
 		const ref = doc(firestoreDB, `chatGroups/${groupId}/messages/${messageId}`);
 		void deleteDoc(ref);
+	}
+
+	function updateMessage(groupId: string, messageId: string, newMessage: string) {
+		const ref = doc(firestoreDB, `chatGroups/${groupId}/messages/${messageId}`);
+		void updateDoc(ref, {
+			messageContent: newMessage,
+			edited: true,
+			editedAt: serverTimestamp(),
+		});
 	}
 
 	//NOTE: use caching - look at firebase docs
@@ -159,14 +169,13 @@ function FirestoreProvider(props: ProviderProps) {
 	useEffect(() => {
 		async function updateUserCache() {
 			if (chatGroups.length !== 0) {
-				const map = userCache;
+				const map = new Map(userCache); // Create a new Map based on the current state so react performs proper re-render
 				//all members of all user groups
 				for (const group of chatGroups) {
 					for (const memberId of group.members) {
 						//if cache does not already have user
 						if (!map.has(memberId)) {
 							const user = await getAppUser(memberId);
-							console.log("read user");
 							if (user) {
 								map.set(memberId, user);
 							}
@@ -178,7 +187,7 @@ function FirestoreProvider(props: ProviderProps) {
 			}
 		}
 		void updateUserCache();
-	}, [chatGroups, userCache]);
+	}, [chatGroups]);
 
 	useEffect(() => {
 		//reset messages and chatGroups array on each re-render to prevent other users viewing wrong messages
@@ -223,6 +232,7 @@ function FirestoreProvider(props: ProviderProps) {
 		updateUserDatabaseProfile,
 		deleteGroup,
 		deleteMessage,
+		updateMessage,
 		userCache,
 		chatGroups,
 		messages,

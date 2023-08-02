@@ -20,6 +20,7 @@ interface FirestoreObject {
 	updateUserDatabaseProfile: (name: string, email?: string) => Promise<void>;
 	deleteGroup: (groupId: string) => void;
 	deleteMessage: (groupId: string, messageId: string) => void;
+	updateMessage: (groupId: string, messageId: string, newMessage: string) => void;
 
 	listenToMsgsFrom: (groupId: string) => Promise<void>;
 	findUsersWithName: (name: string) => Promise<AppUser[]>;
@@ -94,7 +95,9 @@ interface AppMessage {
 	messageContent: string;
 	sender: string; //user id
 	timeSent: Timestamp;
+	editedAt: Timestamp;
 	messageId: string;
+	edited: boolean;
 }
 
 interface AppGroup {

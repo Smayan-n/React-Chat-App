@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { FiEdit2 } from "react-icons/fi";
 import { SlOptionsVertical } from "react-icons/sl";
 import { AppMessage, MessageProps } from "../Utility/interfaces";
 import { getDateFromTimeStamp, getTimeFromTimestamp } from "../Utility/utilityFunctions";
@@ -10,15 +11,18 @@ import Tooltip from "./Tooltip";
 
 function Message(props: MessageProps) {
 	const { message, group } = props;
-	const { userCache, deleteMessage } = useFirestore()!;
+	const { userCache, deleteMessage, updateMessage } = useFirestore()!;
 	const { currentUser } = useAuth()!;
 	const [popupOpen, setPopupOpen] = useState(false);
+	const [editMsg, setEditMsg] = useState(false);
 
-	function getLeftOrRight(msg: AppMessage) {
-		if (currentUser) {
-			if (msg.sender === currentUser.uid) {
+	const editMsgRef = useRef<HTMLTextAreaElement>(null);
+
+	function getLeftOrRight() {
+		if (currentUser && message) {
+			if (message.sender === currentUser.uid) {
 				return "right-msg";
-			} else if (msg.sender === "server") {
+			} else if (message.sender === "server") {
 				return "center-msg";
 			} else {
 				return "left-msg";
@@ -31,9 +35,31 @@ function Message(props: MessageProps) {
 		deleteMessage(group.groupId, message.messageId);
 	}
 
+	function handleEditMessage() {
+		setEditMsg(true);
+	}
+
+	function handleEditSubmit() {
+		if (editMsgRef.current) {
+			const newMessage = editMsgRef.current.value;
+			message.messageContent = newMessage;
+			setEditMsg(false);
+			updateMessage(group.groupId, message.messageId, newMessage);
+		}
+	}
+
+	//neat function to increase textarea height based on content upto a max-height
+	function handleTextAreaInput() {
+		const textarea = editMsgRef.current;
+		if (textarea) {
+			textarea.style.height = "auto"; // Reset height to auto
+			textarea.style.height = `${textarea.scrollHeight}px`;
+		}
+	}
+
 	return (
 		<>
-			<section className={`msg ${getLeftOrRight(message)}`}>
+			<section className={`msg ${getLeftOrRight()}`}>
 				<div className="msg-bubble">
 					{message.sender !== "server" && (
 						<div className="msg-info">
@@ -44,16 +70,14 @@ function Message(props: MessageProps) {
 								<div onClick={() => setPopupOpen(true)} className="msg-options">
 									<SlOptionsVertical size="14px" />
 									<Tooltip
-										position={`tip-bottom ${
-											getLeftOrRight(message) === "right-msg" ? "tip-left" : ""
-										}`}
+										position={`tip-bottom ${getLeftOrRight() === "right-msg" ? "tip-left" : ""}`}
 									>
 										Message Info
 									</Tooltip>
 									<Popup isOpen={popupOpen} onClose={() => setPopupOpen(false)}>
 										<div className="msg-info-popup">
 											<div>
-												<h4>Message Content: </h4>
+												<h4>{`Message Content ${(message.edited && "(edited)") || ""}:`}</h4>
 												<div className="msg-info-data">{message.messageContent}</div>
 											</div>
 											<div>
@@ -71,6 +95,17 @@ function Message(props: MessageProps) {
 													)}` || ""}
 												</div>
 											</div>
+											{message.editedAt && (
+												<div>
+													<h4>Message Edited At: </h4>
+													<div className="msg-info-data">
+														{`${getDateFromTimeStamp(
+															message.editedAt
+														)}, ${getTimeFromTimestamp(message.editedAt, true)}` || ""}
+													</div>
+												</div>
+											)}
+
 											{/**only render delete button if current user sent the message */}
 											{currentUser && currentUser.uid === message.sender && (
 												<button onClick={handleDeleteMessage} className="delete-msg-btn">
@@ -84,8 +119,34 @@ function Message(props: MessageProps) {
 						</div>
 					)}
 
-					<div className="msg-content">{message.messageContent}</div>
-					{/* <input className="edit-msg-input" type="text"></input> */}
+					<div className={`msg-content-section`}>
+						{!editMsg ? (
+							<>
+								<div className="msg-content">{message.messageContent}</div>
+
+								{message.edited ? <div className="msg-edited-alert">(edited)</div> : ""}
+								<div onClick={handleEditMessage} className="msg-edit-icon">
+									<FiEdit2 size="16.5px" />
+								</div>
+							</>
+						) : (
+							<>
+								<textarea
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											e.preventDefault();
+											handleEditSubmit();
+										}
+									}}
+									ref={editMsgRef}
+									defaultValue={message.messageContent}
+									className="edit-msg-input"
+									onInput={handleTextAreaInput}
+									onMouseEnter={handleTextAreaInput}
+								></textarea>
+							</>
+						)}
+					</div>
 				</div>
 			</section>
 		</>
