@@ -82,6 +82,9 @@
 .group-selected{
     background-color: #5f5f5f;
 }
+.group-selected:hover{
+    background-color: #717171;
+}
 
 
 

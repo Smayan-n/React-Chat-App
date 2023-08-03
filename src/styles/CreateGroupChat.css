@@ -104,7 +104,7 @@ button:hover{
     justify-content: flex-start;
     align-items: flex-start;
     max-height: 300px;
-    overflow-y: scroll;
+    overflow-y: auto;
     /* position: relative; */
 }
 

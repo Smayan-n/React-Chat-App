@@ -3,12 +3,10 @@
 	bottom: 47px;
 	background-color: rgb(109, 109, 109);
 	color: white;
-	font-size: 14px;
+	font-size: 16px;
+	font-weight: 500;
 	opacity: 0;
-	padding-left: 9px;
-	padding-right: 9px;
-	padding-top: 10px;
-	padding-bottom: 10px;	
+	padding: 7px;
 	border-radius: 4px;
 	transition: opacity 0.2s;
 	pointer-events: none;

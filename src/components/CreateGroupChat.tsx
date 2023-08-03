@@ -31,7 +31,7 @@ function CreateGroupChat(props: CreateGroupChatProps) {
 	}, [group, userCache]);
 
 	function getGroupCreatorName(uid: string): string {
-		const groupCreator = groupMembers.find((member: AppUser) => member.uid === uid);
+		const groupCreator = userCache.get(uid);
 		return groupCreator ? groupCreator.username : "";
 	}
 

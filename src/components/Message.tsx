@@ -6,6 +6,7 @@ import { getDateFromTimeStamp, getTimeFromTimestamp } from "../Utility/utilityFu
 import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/Message.css";
+import Alert from "./Alert";
 import Popup from "./Popup";
 import Tooltip from "./Tooltip";
 
@@ -15,6 +16,7 @@ function Message(props: MessageProps) {
 	const { currentUser } = useAuth()!;
 	const [popupOpen, setPopupOpen] = useState(false);
 	const [editMsg, setEditMsg] = useState(false);
+	const [error, setError] = useState("");
 
 	const editMsgRef = useRef<HTMLTextAreaElement>(null);
 
@@ -41,6 +43,10 @@ function Message(props: MessageProps) {
 
 	function handleEditSubmit() {
 		if (editMsgRef.current) {
+			if (editMsgRef.current.value === "") {
+				setError("Message cannot be empty");
+				return;
+			}
 			const newMessage = editMsgRef.current.value;
 			setEditMsg(false);
 			updateMessage(group.groupId, message.messageId, newMessage);
@@ -58,13 +64,18 @@ function Message(props: MessageProps) {
 
 	return (
 		<>
-			<section className={`msg ${getLeftOrRight()}`}>
+			{error && <Alert autoClose onClose={() => setError("")} message={error} />}
+			<section id={message.messageId} className={`msg ${getLeftOrRight()}`}>
 				<div className="msg-bubble">
 					{message.sender !== "server" && (
 						<div className="msg-info">
 							<div className="msg-sender">{userCache.get(message.sender)?.username || ""}</div>
 							<div className="msg-info-right">
-								<div className="msg-time">{getTimeFromTimestamp(message.timeSent, false)}</div>
+								<div className="msg-time">
+									{getTimeFromTimestamp(message.timeSent, false)}
+									{", "}
+									{getDateFromTimeStamp(message.timeSent, true).substring(0, 3)}
+								</div>
 
 								<div onClick={() => setPopupOpen(true)} className="msg-options">
 									<SlOptionsVertical size="14px" />
@@ -76,7 +87,7 @@ function Message(props: MessageProps) {
 									<Popup isOpen={popupOpen} onClose={() => setPopupOpen(false)}>
 										<div className="msg-info-popup">
 											<div>
-												<h4>{`Message Content ${(message.edited && "(edited)") || ""}:`}</h4>
+												<h4>Message Content{`${(message.edited && "(edited)") || ""}`}:</h4>
 												<div className="msg-info-data">{message.messageContent}</div>
 											</div>
 											<div>
@@ -123,9 +134,11 @@ function Message(props: MessageProps) {
 							<>
 								<div className="msg-content">{message.messageContent}</div>
 
-								{message.edited ? <div className="msg-edited-alert">(edited)</div> : ""}
-								<div onClick={handleEditMessage} className="msg-edit-icon">
-									<FiEdit2 size="16.5px" />
+								<div className="msg-content-right">
+									{message.edited ? <div className="msg-edited-alert">(edited)</div> : ""}
+									<div onClick={handleEditMessage} className="msg-edit-icon">
+										<FiEdit2 size="16.5px" />
+									</div>
 								</div>
 							</>
 						) : (

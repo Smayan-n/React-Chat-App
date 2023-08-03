@@ -1,7 +1,8 @@
+import { Timestamp } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import { AiFillEdit, AiFillInfoCircle, AiOutlineArrowDown } from "react-icons/ai";
 import { AppMessage, ChatInterfaceProps } from "../Utility/interfaces";
-import { getTimeFromTimestamp } from "../Utility/utilityFunctions";
+import { getDateFromTimeStamp, getTimeFromTimestamp } from "../Utility/utilityFunctions";
 import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
 import { useRealtime } from "../contexts/RealtimeContext";
@@ -22,14 +23,8 @@ function ChatInterface(props: ChatInterfaceProps) {
 
 	const [popupOpen, setPopupOpen] = useState(false);
 	const [popup2Open, setPopup2Open] = useState(false);
-	const [msgSendLoading, setMsgSendLoading] = useState(false);
 
 	const dummyRef = useRef<HTMLDivElement>(null);
-
-	const mainChatAreaRef = useRef<HTMLDivElement>(null);
-	const [atChatBottom, setAtChatBottom] = useState(true);
-	const [newMessages, setNewMessages] = useState(0);
-	const numMessagesRef = useRef(messages.length);
 
 	//section resizing logic - user can freely change chats section and group section size
 	const sliderSectionRef = useRef<HTMLDivElement>(null);
@@ -70,18 +65,52 @@ function ChatInterface(props: ChatInterfaceProps) {
 				window.removeEventListener("mousemove", onSectionResize);
 			}
 		};
+		//dependency is group because effect is not called when a ref changes
 	}, [group]);
 
 	function scrollToBottom() {
 		dummyRef.current?.scrollIntoView({ behavior: "smooth" });
+		setAtChatBottom(true);
+		setNewMessages(0);
 	}
 
+	const mainChatAreaRef = useRef<HTMLDivElement>(null);
+	const numMessagesRef = useRef(messages.length);
+	const [atChatBottom, setAtChatBottom] = useState(true);
+	const [newMessages, setNewMessages] = useState(0);
+
+	const [currViewDate, setCurrViewDate] = useState("");
 	useEffect(() => {
 		const chatElement = mainChatAreaRef.current;
 
-		function handleScroll() {
+		function handleScroll(checkChatBottom?: boolean) {
+			//for showing date of current messages (in scroll view)
 			if (chatElement) {
-				if (chatElement.scrollHeight - chatElement.scrollTop - chatElement.clientHeight <= 50) {
+				const containerRect = chatElement.getBoundingClientRect();
+				const messageElements = chatElement.querySelectorAll(".msg"); // get all messages
+				let visibleMessageId = "";
+
+				for (const message of messageElements) {
+					const elementRect = message.getBoundingClientRect();
+
+					//find the first message in current the scroll view
+					if (elementRect.top >= containerRect.top && elementRect.bottom <= containerRect.bottom) {
+						visibleMessageId = message.id;
+						break;
+					}
+				}
+				//set that message's date to be displayed
+				const message = messages.find((msg) => msg.messageId === visibleMessageId);
+				if (message) {
+					setCurrViewDate(getDateFromTimeStamp(message.timeSent));
+				} else {
+					setCurrViewDate("");
+				}
+			}
+
+			//for determining whether user is at bottom of chat
+			if (chatElement && checkChatBottom) {
+				if (chatElement.scrollHeight - chatElement.scrollTop - chatElement.clientHeight <= 150) {
 					setAtChatBottom(true);
 					setNewMessages(0);
 				} else {
@@ -90,17 +119,21 @@ function ChatInterface(props: ChatInterfaceProps) {
 			}
 		}
 
+		function handleScrollHelper() {
+			handleScroll(true);
+		}
+
 		if (chatElement) {
-			chatElement.addEventListener("scroll", handleScroll);
+			chatElement.addEventListener("scroll", handleScrollHelper);
+			//run method once
+			handleScroll(false);
 		}
 
 		//cleanup - remove listeners
 		return () => {
-			chatElement && chatElement.removeEventListener("scroll", handleScroll);
+			chatElement && chatElement.removeEventListener("scroll", handleScrollHelper);
 		};
-
-		//dependency is group because effect is not called when a ref changes
-	}, [group]);
+	}, [messages]);
 
 	useEffect(() => {
 		//run only once
@@ -108,24 +141,17 @@ function ChatInterface(props: ChatInterfaceProps) {
 			numMessagesRef.current = messages.length;
 			//scroll after timeout because messages take time to be rendered after sending
 			setTimeout(() => {
-				// setUserRecentSentMsg(null);
-				const chatElement = mainChatAreaRef.current;
-				if (chatElement) {
-					if (atChatBottom) {
-						scrollToBottom();
-						setNewMessages(0);
-					} else {
-						setNewMessages(newMessages + 1);
-					}
+				if (atChatBottom) {
+					scrollToBottom();
+				} else {
+					setNewMessages(newMessages + 1);
 				}
-			}, 10);
+			}, 0);
 		}
 	}, [messages, atChatBottom, newMessages]);
 
 	async function handleSendMessage(message: string) {
-		setMsgSendLoading(true);
 		await addMessageToDatabase(group!.groupId, message, currentUser!.uid);
-		setMsgSendLoading(false);
 	}
 
 	function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -134,9 +160,9 @@ function ChatInterface(props: ChatInterfaceProps) {
 			//make sure message is not empty
 			const msg = msgInputRef.current.value;
 			if (msg) {
-				void handleSendMessage(msgInputRef.current?.value);
-				//when user sends message, make sure it auto scrolls
+				//when user sends message, make sure it auto scrolls to the bottom
 				setAtChatBottom(true);
+				void handleSendMessage(msgInputRef.current?.value);
 
 				//clear input and set user typing to false
 				msgInputRef.current.value = "";
@@ -176,7 +202,9 @@ function ChatInterface(props: ChatInterfaceProps) {
 				<header className="chat-header">
 					<div className="chat-header-info">
 						<h2 className="chat-header-title">{group && group.groupName}</h2>
-						<div className="chat-header-members"></div>
+						<div className="chat-header-members">
+							{group.members.map((member) => userCache.get(member)?.username as string).join(", ")}
+						</div>
 					</div>
 
 					<div className="chat-header-settings">
@@ -215,6 +243,7 @@ function ChatInterface(props: ChatInterfaceProps) {
 						{/* <div className="msg-date-div">Hello</div> */}
 						<div className="dummy-div" ref={dummyRef}></div>
 					</div>
+
 					{loading && <Loader message="Loading Messages" />}
 
 					{/*show which users are typing */}
@@ -229,10 +258,11 @@ function ChatInterface(props: ChatInterfaceProps) {
 							{(newMessages && `${newMessages} new message(s)`) || ""}
 						</div>
 					)}
+
+					{currViewDate && <div className="curr-view-date">{currViewDate}</div>}
 				</div>
 
 				<form onSubmit={handleSubmit} className="chat-input-form">
-					{messages && ""}
 					<input
 						onChange={(e) => {
 							if (currentUser && group) {
