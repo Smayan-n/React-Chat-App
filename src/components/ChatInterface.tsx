@@ -1,4 +1,3 @@
-import { Timestamp } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import { AiFillEdit, AiFillInfoCircle, AiOutlineArrowDown } from "react-icons/ai";
 import { AppMessage, ChatInterfaceProps } from "../Utility/interfaces";
@@ -138,6 +137,12 @@ function ChatInterface(props: ChatInterfaceProps) {
 	useEffect(() => {
 		//run only once
 		if (numMessagesRef.current !== messages.length) {
+			//if a message was deleted, dont run next part of code
+			if (messages.length < numMessagesRef.current) {
+				numMessagesRef.current = messages.length;
+
+				return;
+			}
 			numMessagesRef.current = messages.length;
 			//scroll after timeout because messages take time to be rendered after sending
 			setTimeout(() => {

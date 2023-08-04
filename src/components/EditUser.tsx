@@ -1,7 +1,5 @@
-import { Timestamp } from "firebase/firestore";
 import { useRef, useState } from "react";
 import { EditUserProps } from "../Utility/interfaces";
-import { getDateFromTimeStamp } from "../Utility/utilityFunctions";
 import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
 import "../styles/EditUser.css";
@@ -10,7 +8,7 @@ import Loader from "./Loader";
 
 function EditUser({ onClose }: EditUserProps) {
 	const { currentUser, updateUserProfile } = useAuth()!;
-	const { updateUserDatabaseProfile, userCache } = useFirestore()!;
+	const { updateUserDatabaseProfile } = useFirestore()!;
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 

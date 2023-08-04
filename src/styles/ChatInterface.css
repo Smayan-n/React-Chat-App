@@ -140,6 +140,7 @@
 }
 .main-chat-area::-webkit-scrollbar-track {
     background: #969595;
+
   }
   .main-chat-area::-webkit-scrollbar-thumb {
     background: #3d3d3d;

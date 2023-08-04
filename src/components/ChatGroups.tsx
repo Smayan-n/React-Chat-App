@@ -16,7 +16,7 @@ function ChatGroups(props: ChatGroupsProps) {
 	const [loading, setLoading] = useState(false);
 	const [latestMessages, setLatestMessages] = useState<Map<string, AppMessage> | null>(null);
 
-	const { userCache, messages } = useFirestore()!;
+	const { userCache } = useFirestore()!;
 
 	//load latest messages from each group chat
 	useEffect(() => {

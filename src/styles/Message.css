@@ -176,12 +176,30 @@
 }
 
 .edit-msg-input::-webkit-scrollbar, .added-users::-webkit-scrollbar{
-    width: 10px;
-    height: 7px;
+    width: 5px;
 }
 .edit-msg-input::-webkit-scrollbar-track, .added-users::-webkit-scrollbar-track {
     background: #ababab;
   }
   .edit-msg-input::-webkit-scrollbar-thumb , .added-users::-webkit-scrollbar-thumb{
     background: #7d7d7d;
+  }
+
+  .edit-msg-section{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .edit-msg-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    background-color: green;
+    outline: none;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    width: 100%;
   }

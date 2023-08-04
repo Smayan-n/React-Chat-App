@@ -28,7 +28,8 @@ right: 0;
 .profile-icon,
 .create-chat-btn,
 .msg-options,
-.scroll-down-btn{
+.scroll-down-btn,
+.msg-edit-icon{
     position: relative;
 }
 
@@ -38,6 +39,7 @@ right: 0;
 .profile-icon:hover .tooltip,
 .create-chat-btn:hover .tooltip,
 .msg-options:hover .tooltip,
-.scroll-down-btn:hover .tooltip{
+.scroll-down-btn:hover .tooltip,
+.msg-edit-icon:hover .tooltip{
     opacity: 0.95;
 }

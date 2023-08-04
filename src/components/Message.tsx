@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
+import { AiOutlineCheck } from "react-icons/ai";
 import { FiEdit2 } from "react-icons/fi";
 import { SlOptionsVertical } from "react-icons/sl";
-import { AppMessage, MessageProps } from "../Utility/interfaces";
+import { MessageProps } from "../Utility/interfaces";
 import { getDateFromTimeStamp, getTimeFromTimestamp } from "../Utility/utilityFunctions";
 import { useAuth } from "../contexts/AuthContext";
 import { useFirestore } from "../contexts/FirestoreContext";
@@ -38,6 +39,7 @@ function Message(props: MessageProps) {
 	}
 
 	function handleEditMessage() {
+		editMsgRef.current && editMsgRef.current.focus();
 		setEditMsg(true);
 	}
 
@@ -79,9 +81,7 @@ function Message(props: MessageProps) {
 
 								<div onClick={() => setPopupOpen(true)} className="msg-options">
 									<SlOptionsVertical size="14px" />
-									<Tooltip
-										position={`tip-bottom ${getLeftOrRight() === "right-msg" ? "tip-left" : ""}`}
-									>
+									<Tooltip position={`${getLeftOrRight() === "right-msg" ? "tip-left" : ""}`}>
 										Message Info
 									</Tooltip>
 									<Popup isOpen={popupOpen} onClose={() => setPopupOpen(false)}>
@@ -138,24 +138,30 @@ function Message(props: MessageProps) {
 									{message.edited ? <div className="msg-edited-alert">(edited)</div> : ""}
 									<div onClick={handleEditMessage} className="msg-edit-icon">
 										<FiEdit2 size="16.5px" />
+										<Tooltip position="tip-bottom tip-left">Edit Message</Tooltip>
 									</div>
 								</div>
 							</>
 						) : (
 							<>
-								<textarea
-									onKeyDown={(e) => {
-										if (e.key === "Enter") {
-											e.preventDefault();
-											handleEditSubmit();
-										}
-									}}
-									ref={editMsgRef}
-									defaultValue={message.messageContent}
-									className="edit-msg-input"
-									onInput={handleTextAreaInput}
-									onMouseEnter={handleTextAreaInput}
-								></textarea>
+								<div className="edit-msg-section">
+									<textarea
+										onKeyDown={(e) => {
+											if (e.key === "Enter") {
+												e.preventDefault();
+												handleEditSubmit();
+											}
+										}}
+										ref={editMsgRef}
+										defaultValue={message.messageContent}
+										className="edit-msg-input"
+										onInput={handleTextAreaInput}
+										onMouseEnter={handleTextAreaInput}
+									></textarea>
+									<button onClick={handleEditSubmit} className="edit-msg-btn">
+										<AiOutlineCheck size="25px" />
+									</button>
+								</div>
 							</>
 						)}
 					</div>

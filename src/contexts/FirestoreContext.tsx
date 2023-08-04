@@ -196,7 +196,7 @@ function FirestoreProvider(props: ProviderProps) {
 		setUserCache(new Map());
 
 		//onSnapshot to update chatGroups automatically
-		//load groups in which the current user is in only
+		//load groups in which the current user is a member of
 		let unsubGroupSnapshot: Unsubscribe | null = null;
 		if (currentUser) {
 			const ref = collection(firestoreDB, "chatGroups");
