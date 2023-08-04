@@ -135,7 +135,7 @@ function ChatInterface(props: ChatInterfaceProps) {
 	}, [messages]);
 
 	useEffect(() => {
-		//run only once
+		//run only once and don't run when a messages was edited
 		if (numMessagesRef.current !== messages.length) {
 			//if a message was deleted, dont run next part of code
 			if (messages.length < numMessagesRef.current) {
